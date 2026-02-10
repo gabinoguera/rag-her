@@ -1,0 +1,15 @@
+{
+  "quote": {
+    "project": {
+      "title": "Proyecto Sin Items"
+    },
+    "currency": "EUR",
+    "scope_blocks": [
+      {
+        "title": "Modulo Principal",
+        "short_description": "Desarrollo del modulo principal"
+      }
+    ],
+    "items": []
+  }
+}

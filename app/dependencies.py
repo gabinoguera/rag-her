@@ -1,9 +1,39 @@
+from collections.abc import AsyncIterator
+
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings, get_settings
+from app.core.embeddings import EmbeddingService
+from app.db import get_session_factory
 
 
 async def get_current_settings(
     settings: Settings = Depends(get_settings),
 ) -> Settings:
     return settings
+
+
+async def get_db_session() -> AsyncIterator[AsyncSession]:
+    factory = get_session_factory()
+    async with factory() as session:
+        yield session
+
+
+def get_embedding_service(
+    settings: Settings = Depends(get_settings),
+) -> EmbeddingService:
+    return EmbeddingService(
+        api_key=settings.OPENAI_API_KEY,
+        model=settings.EMBEDDING_MODEL,
+        dimensions=settings.EMBEDDING_DIMENSIONS,
+    )
+
+
+async def get_ingest_service(
+    db: AsyncSession = Depends(get_db_session),
+    embedding_service: EmbeddingService = Depends(get_embedding_service),
+) -> "IngestService":  # noqa: F821
+    from app.services.ingest_service import IngestService
+
+    return IngestService(db=db, embedding_service=embedding_service)

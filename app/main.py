@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import router as v1_router
 from app.config import get_settings
+from app.db import close_db, init_db
 from app.utils.logging import setup_logging
 
 logger = structlog.stdlib.get_logger()
@@ -17,6 +18,8 @@ logger = structlog.stdlib.get_logger()
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     setup_logging(settings.LOG_LEVEL, settings.ENVIRONMENT)
+
+    init_db(settings)
 
     await logger.ainfo(
         "Starting RAG Estimation Service",
@@ -29,6 +32,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         llm_model=settings.LLM_MODEL,
     )
     yield
+    await close_db()
     await logger.ainfo("Shutting down RAG Estimation Service")
 
 

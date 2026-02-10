@@ -1,0 +1,367 @@
+{
+  "quote": {
+    "client": {
+      "name": "Juan Garcia",
+      "email": "juan.garcia@empresa.com",
+      "company": "Empresa Tecnologica SL"
+    },
+    "project": {
+      "title": "Plataforma de Gestion con IA",
+      "subtitle": "Sistema integral de automatizacion empresarial con inteligencia artificial",
+      "proposal_date": "2026-01-15"
+    },
+    "dates": {
+      "issue_date": "2026-01-15",
+      "valid_until": "2026-02-15"
+    },
+    "currency": "EUR",
+    "discount": {
+      "type": "percentage",
+      "amount": 0
+    },
+    "objectives": [
+      {
+        "title": "Automatizacion de procesos",
+        "description": "Automatizar los procesos de gestion empresarial mediante inteligencia artificial para reducir tiempos operativos."
+      },
+      {
+        "title": "Analitica avanzada",
+        "description": "Implementar dashboards interactivos con visualizacion de datos en tiempo real y predicciones basadas en IA."
+      },
+      {
+        "title": "Seguridad y cumplimiento",
+        "description": "Garantizar la seguridad de los datos y el cumplimiento normativo mediante cifrado y control de acceso."
+      },
+      {
+        "title": "Eficiencia operativa",
+        "description": "Reducir el tiempo de generacion de informes y presupuestos en un 60% mediante asistencia de IA."
+      }
+    ],
+    "scope_blocks": [
+      {
+        "title": "Backend API",
+        "short_description": "API REST robusta y escalable con autenticacion JWT y rate limiting",
+        "long_description": "Desarrollo del backend completo de la plataforma, incluyendo API REST con autenticacion JWT, sistema de permisos basado en roles, rate limiting por usuario, webhooks para integraciones externas y documentacion OpenAPI automatica.",
+        "features": [
+          "Autenticacion JWT con refresh tokens",
+          "Rate limiting por usuario y endpoint",
+          "Webhooks configurables",
+          "Documentacion OpenAPI automatica",
+          "Sistema de permisos RBAC"
+        ],
+        "technologies": [
+          "Ruby on Rails",
+          "PostgreSQL",
+          "Redis",
+          "Sidekiq"
+        ],
+        "detailed_features": [
+          {
+            "title": "Sistema de autenticacion",
+            "description": "Autenticacion basada en JWT con soporte para refresh tokens, revocacion de sesiones y autenticacion de dos factores."
+          },
+          {
+            "title": "API REST completa",
+            "description": "Endpoints CRUD para todas las entidades del sistema con paginacion, filtrado y ordenacion."
+          }
+        ]
+      },
+      {
+        "title": "Frontend Web",
+        "short_description": "Interfaz web moderna y responsive con React y dashboards interactivos",
+        "long_description": "Desarrollo de la interfaz de usuario web con React, incluyendo dashboards interactivos con graficas en tiempo real, sistema de notificaciones, formularios dinamicos y experiencia responsive para todos los dispositivos.",
+        "features": [
+          "Dashboard interactivo con graficas",
+          "Sistema de notificaciones en tiempo real",
+          "Formularios dinamicos",
+          "Diseno responsive",
+          "Tema claro y oscuro"
+        ],
+        "technologies": [
+          "React",
+          "TypeScript",
+          "Chart.js",
+          "TailwindCSS"
+        ],
+        "detailed_features": [
+          {
+            "title": "Dashboard principal",
+            "description": "Panel de control con KPIs, graficas de tendencia y widgets configurables por el usuario."
+          },
+          {
+            "title": "Gestion de formularios",
+            "description": "Sistema de formularios dinamicos con validacion en tiempo real y guardado automatico."
+          }
+        ]
+      },
+      {
+        "title": "Modulo IA",
+        "short_description": "Motor de inteligencia artificial con chatbot conversacional y analisis de documentos",
+        "long_description": "Desarrollo del modulo de inteligencia artificial que incluye un chatbot conversacional con memoria de contexto, sistema de analisis automatico de documentos, generacion de informes mediante IA y motor de recomendaciones basado en patrones historicos.",
+        "features": [
+          "Chatbot conversacional con contexto",
+          "Analisis automatico de documentos",
+          "Generacion de informes con IA",
+          "Motor de recomendaciones",
+          "Procesamiento de lenguaje natural"
+        ],
+        "technologies": [
+          "Python",
+          "FastAPI",
+          "OpenAI",
+          "LangChain",
+          "pgvector"
+        ],
+        "detailed_features": [
+          {
+            "title": "Chatbot con memoria",
+            "description": "Chatbot conversacional que mantiene contexto de la conversacion y puede acceder a datos del sistema."
+          },
+          {
+            "title": "Analisis de documentos",
+            "description": "Pipeline de procesamiento que extrae informacion estructurada de documentos PDF y Word."
+          }
+        ]
+      }
+    ],
+    "roadmap_phases": [
+      {
+        "name": "Fase 1: Analisis y Diseno",
+        "duration": "2 semanas",
+        "description": "Analisis de requisitos, diseno de arquitectura y prototipos de interfaz.",
+        "deliverables": [
+          "Documento de requisitos",
+          "Arquitectura tecnica",
+          "Prototipos UI/UX"
+        ],
+        "modules": [
+          "Backend API",
+          "Frontend Web",
+          "Modulo IA"
+        ]
+      },
+      {
+        "name": "Fase 2: Desarrollo Backend",
+        "duration": "4 semanas",
+        "description": "Desarrollo del backend API, base de datos y servicios core.",
+        "deliverables": [
+          "API REST funcional",
+          "Base de datos configurada",
+          "Tests unitarios backend"
+        ],
+        "modules": [
+          "Backend API"
+        ]
+      },
+      {
+        "name": "Fase 3: Desarrollo Frontend",
+        "duration": "3 semanas",
+        "description": "Desarrollo de la interfaz web con React y dashboards.",
+        "deliverables": [
+          "Interfaz web completa",
+          "Dashboards interactivos",
+          "Tests de componentes"
+        ],
+        "modules": [
+          "Frontend Web"
+        ]
+      },
+      {
+        "name": "Fase 4: Integracion IA",
+        "duration": "2 semanas",
+        "description": "Integracion del modulo de inteligencia artificial con chatbot y analisis de documentos.",
+        "deliverables": [
+          "Chatbot funcional",
+          "Pipeline de analisis de documentos",
+          "Integracion con OpenAI"
+        ],
+        "modules": [
+          "Modulo IA"
+        ]
+      },
+      {
+        "name": "Fase 5: Testing y Despliegue",
+        "duration": "1 semana",
+        "description": "Testing integral, correccion de bugs y despliegue en produccion.",
+        "deliverables": [
+          "Tests E2E",
+          "Documentacion",
+          "Despliegue en produccion"
+        ],
+        "modules": [
+          "Backend API",
+          "Frontend Web",
+          "Modulo IA"
+        ]
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Analisis de requisitos y arquitectura",
+        "description": "Levantamiento de requisitos, diseno de arquitectura tecnica y plan de proyecto.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 1: Analisis y Diseno"
+      },
+      {
+        "type": "service",
+        "name": "Diseno UX/UI",
+        "description": "Diseno de prototipos, flujos de usuario y guia de estilos.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 450,
+        "discount_percent": 0,
+        "phase": "Fase 1: Analisis y Diseno"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo API REST",
+        "description": "Desarrollo del backend completo con autenticacion JWT, endpoints CRUD y documentacion OpenAPI.",
+        "quantity": 15,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo Backend"
+      },
+      {
+        "type": "service",
+        "name": "Base de datos y migraciones",
+        "description": "Diseno del schema de base de datos, migraciones y optimizacion de queries.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 450,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo Backend"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo Frontend React",
+        "description": "Desarrollo de componentes React, paginas y navegacion de la aplicacion web.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 450,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo Frontend"
+      },
+      {
+        "type": "service",
+        "name": "Dashboard y visualizaciones",
+        "description": "Implementacion de dashboards interactivos con graficas Chart.js y widgets configurables.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo Frontend"
+      },
+      {
+        "type": "service",
+        "name": "Integracion OpenAI",
+        "description": "Integracion con la API de OpenAI para generacion de texto, embeddings y analisis.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 550,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integracion IA"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo chatbot",
+        "description": "Desarrollo del chatbot conversacional con memoria de contexto y acceso a datos del sistema.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 550,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integracion IA"
+      },
+      {
+        "type": "service",
+        "name": "Testing y QA",
+        "description": "Tests unitarios, de integracion y end-to-end. Correccion de bugs.",
+        "quantity": 3,
+        "unit": "dia",
+        "unit_price": 400,
+        "discount_percent": 0,
+        "phase": "Fase 5: Testing y Despliegue"
+      },
+      {
+        "type": "service",
+        "name": "Despliegue y configuracion",
+        "description": "Configuracion de infraestructura, CI/CD y despliegue en produccion.",
+        "quantity": 2,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 5: Testing y Despliegue"
+      }
+    ],
+    "team_members": [
+      {
+        "profile_type": "Tech Lead",
+        "description": "Lider tecnico responsable de la arquitectura y decision tecnicas del proyecto.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Full Stack Developer",
+        "description": "Desarrollador full stack con experiencia en Ruby on Rails y React.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "UX/UI Designer",
+        "description": "Disenador de experiencia de usuario e interfaz grafica.",
+        "quantity": 1,
+        "dedication": "part_time"
+      },
+      {
+        "profile_type": "QA Engineer",
+        "description": "Ingeniero de calidad responsable de la estrategia de testing.",
+        "quantity": 1,
+        "dedication": "part_time"
+      },
+      {
+        "profile_type": "Project Manager",
+        "description": "Gestor de proyecto responsable de la planificacion y seguimiento.",
+        "quantity": 1,
+        "dedication": "part_time"
+      }
+    ],
+    "conditions": {
+      "payment_terms": [
+        "30% al inicio del proyecto",
+        "25% al completar Fase 2",
+        "25% al completar Fase 4",
+        "20% al entrega final"
+      ],
+      "included_services": [
+        "Reuniones semanales de seguimiento",
+        "Documentacion tecnica",
+        "Soporte post-lanzamiento (2 semanas)",
+        "Formacion al equipo del cliente",
+        "Acceso al repositorio de codigo",
+        "Garantia de bugs (3 meses)"
+      ],
+      "additional_services": [
+        {
+          "name": "Soporte extendido mensual",
+          "price": 1500
+        },
+        {
+          "name": "Modulo de reportes avanzados",
+          "price": 3000
+        },
+        {
+          "name": "Integracion con ERP externo",
+          "price": 4500
+        }
+      ]
+    },
+    "notes": "El presupuesto incluye todas las tecnologias y licencias necesarias para el desarrollo. Los precios no incluyen IVA.",
+    "terms": "Propuesta valida por 30 dias. Los plazos pueden variar en funcion de la disponibilidad del cliente para validaciones y feedback."
+  },
+  "source": "manual_upload",
+  "ingested_by": "user_test_001"
+}

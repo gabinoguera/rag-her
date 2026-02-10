@@ -1,0 +1,24 @@
+{
+  "quote": {
+    "project": {
+      "title": "Proyecto Minimo de Test"
+    },
+    "currency": "EUR",
+    "scope_blocks": [
+      {
+        "title": "Modulo Principal",
+        "short_description": "Desarrollo del modulo principal de la aplicacion"
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Desarrollo basico",
+        "description": "Desarrollo del modulo principal.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 400
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "quote": {
+    "project": {
+      "title": "Proyecto Con Precio Negativo"
+    },
+    "currency": "EUR",
+    "scope_blocks": [
+      {
+        "title": "Modulo Principal",
+        "short_description": "Desarrollo del modulo principal"
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Tarea con precio negativo",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": -100
+      }
+    ]
+  }
+}
