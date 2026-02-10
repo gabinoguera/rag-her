@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     EMBEDDING_DIMENSIONS: int = 1536
     LLM_MODEL: str = "gpt-4o"
 
+    # Search defaults
+    DEFAULT_TOP_K: int = 10
+    DEFAULT_MIN_SIMILARITY: float = 0.6
+    MAX_TOP_K: int = 50
+    HNSW_EF_SEARCH: int = 100
+
     @field_validator("DATABASE_URL")
     @classmethod
     def database_url_must_be_postgresql(cls, v: str) -> str:

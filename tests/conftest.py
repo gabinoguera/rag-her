@@ -107,6 +107,9 @@ def _make_mock_embedding_service() -> MagicMock:
         return [[0.1] * 1536 for _ in texts]
 
     service.generate_embeddings = AsyncMock(side_effect=mock_generate)
+    service.generate_single_embedding = AsyncMock(
+        side_effect=lambda text: [0.1] * 1536
+    )
     service._model = "test-embedding-model"
     return service
 
@@ -128,6 +131,7 @@ async def client_with_mock_embeddings() -> AsyncIterator[AsyncClient]:
     # Clean tables before each test to ensure isolation
     engine = create_async_engine(DATABASE_URL, echo=False, poolclass=NullPool)
     async with engine.begin() as conn:
+        await conn.execute(sa_text("DELETE FROM rag.search_logs"))
         await conn.execute(sa_text("DELETE FROM rag.ingestion_logs"))
         await conn.execute(sa_text("DELETE FROM rag.chunks"))
         await conn.execute(sa_text("DELETE FROM rag.documents"))
