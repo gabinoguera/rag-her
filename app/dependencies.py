@@ -47,3 +47,31 @@ async def get_retrieval_service(
     from app.core.retrieval import RetrievalService
 
     return RetrievalService(db=db, embedding_service=embedding_service, settings=settings)
+
+
+def get_generation_service(
+    settings: Settings = Depends(get_settings),
+) -> "GenerationService":  # noqa: F821
+    from app.core.generation import GenerationService
+
+    return GenerationService(
+        api_key=settings.OPENAI_API_KEY,
+        model=settings.LLM_MODEL,
+        max_tokens=settings.LLM_MAX_TOKENS,
+        temperature=settings.LLM_TEMPERATURE,
+        timeout=settings.LLM_TIMEOUT,
+    )
+
+
+async def get_estimation_pipeline(
+    retrieval_service: "RetrievalService" = Depends(get_retrieval_service),  # noqa: F821
+    generation_service: "GenerationService" = Depends(get_generation_service),  # noqa: F821
+    settings: Settings = Depends(get_settings),
+) -> "EstimationPipeline":  # noqa: F821
+    from app.core.pipeline import EstimationPipeline
+
+    return EstimationPipeline(
+        retrieval_service=retrieval_service,
+        generation_service=generation_service,
+        settings=settings,
+    )

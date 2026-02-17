@@ -143,6 +143,77 @@ async def client_with_mock_embeddings() -> AsyncIterator[AsyncClient]:
     app.dependency_overrides.clear()
 
 
+# --- Mock generation service for LLM integration tests ---
+
+
+def _make_mock_generation_service() -> MagicMock:
+    from app.core.response_parser import LLMEstimationResponse
+
+    service = MagicMock()
+
+    valid_response = LLMEstimationResponse(
+        summary="Estimación de prueba para desarrollo backend",
+        estimated_effort={
+            "optimistic": {"days": 5, "hours": 40},
+            "expected": {"days": 10, "hours": 80},
+            "pessimistic": {"days": 15, "hours": 120},
+        },
+        estimated_cost={
+            "optimistic": {"amount": 1750.0, "currency": "EUR"},
+            "expected": {"amount": 3500.0, "currency": "EUR"},
+            "pessimistic": {"amount": 5250.0, "currency": "EUR"},
+        },
+        suggested_unit_price={
+            "amount": 350.0,
+            "unit": "día",
+            "currency": "EUR",
+            "basis": "Mediana de precios unitarios en referencias históricas",
+        },
+        suggested_breakdown=[
+            {"name": "Desarrollo API", "days": 5, "unit_price": 350.0, "total": 1750.0},
+            {"name": "Testing", "days": 3, "unit_price": 350.0, "total": 1050.0},
+            {"name": "Documentación", "days": 2, "unit_price": 350.0, "total": 700.0},
+        ],
+        suggested_technologies=["Python", "FastAPI", "PostgreSQL"],
+        notes="Estimación basada en 5 referencias históricas similares.",
+    )
+
+    service.generate_estimation = AsyncMock(return_value=(valid_response, 5))
+    service.build_fallback_estimation = MagicMock(return_value=valid_response)
+    return service
+
+
+@pytest.fixture
+async def client_with_mock_llm() -> AsyncIterator[AsyncClient]:
+    from sqlalchemy import text as sa_text
+
+    from app.dependencies import get_embedding_service, get_generation_service
+
+    test_settings = get_test_settings()
+    init_db(test_settings)
+
+    mock_emb_service = _make_mock_embedding_service()
+    mock_gen_service = _make_mock_generation_service()
+
+    app.dependency_overrides[get_settings] = get_test_settings
+    app.dependency_overrides[get_embedding_service] = lambda: mock_emb_service
+    app.dependency_overrides[get_generation_service] = lambda: mock_gen_service
+
+    # Clean tables before each test
+    engine = create_async_engine(DATABASE_URL, echo=False, poolclass=NullPool)
+    async with engine.begin() as conn:
+        await conn.execute(sa_text("DELETE FROM rag.search_logs"))
+        await conn.execute(sa_text("DELETE FROM rag.ingestion_logs"))
+        await conn.execute(sa_text("DELETE FROM rag.chunks"))
+        await conn.execute(sa_text("DELETE FROM rag.documents"))
+    await engine.dispose()
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
+    app.dependency_overrides.clear()
+
+
 # --- pytest CLI options ---
 
 

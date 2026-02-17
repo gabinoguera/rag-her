@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     EMBEDDING_DIMENSIONS: int = 1536
     LLM_MODEL: str = "gpt-4o"
+    LLM_MAX_TOKENS: int = 4096
+    LLM_TEMPERATURE: float = 0.2
+    LLM_TIMEOUT: int = 30
 
     # Search defaults
     DEFAULT_TOP_K: int = 10
