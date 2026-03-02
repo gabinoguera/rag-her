@@ -5,7 +5,7 @@ from typing import Any
 
 SYSTEM_PROMPT = """\
 Eres un experto en estimación de proyectos de software con más de 15 años de \
-experiencia. Tu trabajo es generar estimaciones de esfuerzo y coste basándote \
+experiencia. Tu trabajo es generar estimaciones de esfuerzo basándote \
 en datos históricos de presupuestos reales proporcionados como contexto.
 
 REGLAS ESTRICTAS:
@@ -14,43 +14,35 @@ No inventes datos ni uses conocimiento externo sobre precios.
 2. Proporciona siempre tres escenarios: optimista, esperado y pesimista.
 3. El escenario optimista debe ser estrictamente menor que el esperado, \
 y el esperado estrictamente menor que el pesimista.
-4. Desglosa la estimación en subtareas cuando el contexto lo permita.
-5. El precio unitario sugerido debe ser la mediana de los precios unitarios \
-encontrados en las referencias históricas.
-6. Si los datos históricos son insuficientes (menos de 2 referencias relevantes), \
+4. Desglosa la estimación en bloques funcionales con tareas granulares.
+5. Si los datos históricos son insuficientes (menos de 2 referencias relevantes), \
 indica explícitamente que la confianza es baja.
-7. Responde ÚNICAMENTE con un JSON válido siguiendo el schema proporcionado. \
+6. Responde ÚNICAMENTE con un JSON válido siguiendo el schema proporcionado. \
 Sin texto adicional, sin markdown, sin explicaciones fuera del JSON.
-8. Todos los importes deben estar en la moneda especificada.
-9. Los días estimados deben ser números enteros.
-10. Si las referencias históricas usan unidades distintas a días, \
-normaliza todo a días (1 día = 8 horas)."""
+7. Las horas estimadas deben ser números enteros.
+8. Si las referencias históricas usan unidades distintas a horas, \
+normaliza todo a horas (1 día = 8 horas).
+9. Cada bloque funcional en suggested_breakdown debe tener entre 3 y 8 tareas \
+granulares que desglosen el trabajo necesario. Los nombres de las tareas deben \
+ser distintos al nombre del bloque y describir acciones concretas."""
 
 RESPONSE_JSON_SCHEMA = json.dumps(
     {
         "summary": "string — Resumen en 1-2 frases de la estimación",
         "estimated_effort": {
-            "optimistic": {"days": "int", "hours": "int"},
-            "expected": {"days": "int", "hours": "int"},
-            "pessimistic": {"days": "int", "hours": "int"},
-        },
-        "estimated_cost": {
-            "optimistic": {"amount": "number", "currency": "string"},
-            "expected": {"amount": "number", "currency": "string"},
-            "pessimistic": {"amount": "number", "currency": "string"},
-        },
-        "suggested_unit_price": {
-            "amount": "number",
-            "unit": "string",
-            "currency": "string",
-            "basis": "string — Explicación de cómo se calculó",
+            "optimistic": {"hours": "int"},
+            "expected": {"hours": "int"},
+            "pessimistic": {"hours": "int"},
         },
         "suggested_breakdown": [
             {
-                "name": "string",
-                "days": "int",
-                "unit_price": "number",
-                "total": "number",
+                "name": "string — Nombre del bloque funcional",
+                "tasks": [
+                    {
+                        "name": "string — Nombre de la tarea granular",
+                        "hours": "int",
+                    }
+                ],
             }
         ],
         "suggested_technologies": ["string"],

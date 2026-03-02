@@ -1,0 +1,223 @@
+{
+  "quote": {
+    "client": {
+      "name": "Pablo Fernandez",
+      "email": "pablo@vitatrack.io",
+      "company": "VitaTrack Health Tech"
+    },
+    "project": {
+      "title": "App Movil de Fitness y Salud VitaTrack",
+      "subtitle": "Aplicacion movil multiplataforma con seguimiento de actividad, planes de entrenamiento y nutricion",
+      "proposal_date": "2026-01-28"
+    },
+    "dates": {
+      "issue_date": "2026-01-28",
+      "valid_until": "2026-02-28"
+    },
+    "currency": "EUR",
+    "objectives": [
+      {
+        "title": "Seguimiento de actividad fisica",
+        "description": "Permitir a los usuarios registrar y monitorizar su actividad diaria, pasos, calorias y ejercicios realizados."
+      },
+      {
+        "title": "Planes personalizados",
+        "description": "Ofrecer planes de entrenamiento y nutricion adaptados al perfil, objetivos y nivel de cada usuario."
+      },
+      {
+        "title": "Integracion con wearables",
+        "description": "Sincronizar datos de dispositivos como Apple Watch, Fitbit y Garmin para un seguimiento mas preciso."
+      }
+    ],
+    "scope_blocks": [
+      {
+        "title": "App Movil Multiplataforma",
+        "short_description": "Aplicacion movil para iOS y Android con interfaz moderna y experiencia de usuario gamificada",
+        "long_description": "Desarrollo de la aplicacion movil con React Native para ambas plataformas, incluyendo registro de actividades, visualizacion de progreso con graficas, sistema de logros y retos, notificaciones push motivacionales y modo offline para registro de entrenamientos sin conexion.",
+        "features": [
+          "Registro de actividades y ejercicios",
+          "Graficas de progreso semanal y mensual",
+          "Sistema de logros y gamificacion",
+          "Notificaciones push motivacionales",
+          "Modo offline para entrenamientos",
+          "Integracion con Apple Health y Google Fit"
+        ],
+        "technologies": [
+          "React Native",
+          "TypeScript",
+          "Expo",
+          "React Navigation",
+          "Victory Charts"
+        ],
+        "detailed_features": [
+          {
+            "title": "Registro de entrenamientos",
+            "description": "Pantalla de registro con cronometro, contador de series y repeticiones, y selector de ejercicios con animaciones explicativas."
+          },
+          {
+            "title": "Dashboard de progreso",
+            "description": "Panel principal con resumen diario, graficas de tendencia semanal/mensual y comparativas con objetivos marcados."
+          }
+        ]
+      },
+      {
+        "title": "Backend y API",
+        "short_description": "API REST para gestion de usuarios, datos de actividad, planes y sincronizacion con wearables",
+        "long_description": "Backend escalable con API REST, autenticacion segura, almacenamiento de datos de actividad con series temporales, motor de recomendaciones basico para planes de entrenamiento y endpoints de sincronizacion con APIs de wearables.",
+        "features": [
+          "API REST con autenticacion JWT",
+          "Almacenamiento de series temporales de actividad",
+          "Sincronizacion con APIs de wearables",
+          "Motor basico de recomendaciones",
+          "Notificaciones push via Firebase"
+        ],
+        "technologies": [
+          "Python",
+          "FastAPI",
+          "PostgreSQL",
+          "Firebase Cloud Messaging",
+          "Docker"
+        ],
+        "detailed_features": [
+          {
+            "title": "API de sincronizacion",
+            "description": "Endpoints para sincronizar datos de Apple Health, Google Fit, Fitbit y Garmin con transformacion unificada de formatos."
+          },
+          {
+            "title": "Motor de recomendaciones",
+            "description": "Algoritmo basado en reglas que sugiere planes de entrenamiento segun el perfil del usuario, su historial y objetivos."
+          }
+        ]
+      }
+    ],
+    "roadmap_phases": [
+      {
+        "name": "Fase 1: Diseno y Prototipado",
+        "duration": "2 semanas",
+        "description": "Investigacion de usuarios, diseno de interfaz movil y prototipos interactivos validados con usuarios reales.",
+        "deliverables": [
+          "Investigacion de usuarios y personas",
+          "Prototipos interactivos en Figma",
+          "Guia de estilos y componentes"
+        ],
+        "modules": [
+          "App Movil Multiplataforma"
+        ]
+      },
+      {
+        "name": "Fase 2: Desarrollo",
+        "duration": "6 semanas",
+        "description": "Desarrollo paralelo del backend API y la aplicacion movil con integraciones de wearables.",
+        "deliverables": [
+          "API REST funcional",
+          "App movil con funcionalidades core",
+          "Integracion con wearables",
+          "Tests unitarios"
+        ],
+        "modules": [
+          "App Movil Multiplataforma",
+          "Backend y API"
+        ]
+      },
+      {
+        "name": "Fase 3: Testing y Lanzamiento",
+        "duration": "2 semanas",
+        "description": "Testing en dispositivos reales, beta testing con usuarios, optimizacion y publicacion en App Store y Google Play.",
+        "deliverables": [
+          "Beta testing completado",
+          "App publicada en App Store y Google Play",
+          "Documentacion de API"
+        ],
+        "modules": [
+          "App Movil Multiplataforma",
+          "Backend y API"
+        ]
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Diseno UX/UI movil",
+        "description": "Investigacion de usuarios, diseno de pantallas, prototipos interactivos y guia de estilos para la app movil.",
+        "quantity": 8,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 1: Diseno y Prototipado"
+      },
+      {
+        "type": "service",
+        "name": "Prototipado y validacion",
+        "description": "Creacion de prototipos navegables en Figma, sesiones de validacion con usuarios y ajustes de diseno.",
+        "quantity": 5,
+        "unit": "dia",
+        "unit_price": 480,
+        "discount_percent": 0,
+        "phase": "Fase 1: Diseno y Prototipado"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo Backend API",
+        "description": "Desarrollo del backend con FastAPI: autenticacion, endpoints de actividad, series temporales y notificaciones.",
+        "quantity": 15,
+        "unit": "dia",
+        "unit_price": 540,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo App movil",
+        "description": "Desarrollo de la aplicacion con React Native: pantallas, navegacion, registro de actividades y graficas de progreso.",
+        "quantity": 20,
+        "unit": "dia",
+        "unit_price": 520,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo"
+      },
+      {
+        "type": "service",
+        "name": "Integracion wearables y sensores",
+        "description": "Integracion con Apple Health, Google Fit, Fitbit y Garmin. Transformacion y unificacion de datos.",
+        "quantity": 8,
+        "unit": "dia",
+        "unit_price": 560,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo"
+      },
+      {
+        "type": "service",
+        "name": "Testing y publicacion en stores",
+        "description": "Testing en dispositivos reales, beta testing, correccion de bugs, optimizacion y publicacion en App Store y Google Play.",
+        "quantity": 12,
+        "unit": "dia",
+        "unit_price": 460,
+        "discount_percent": 0,
+        "phase": "Fase 3: Testing y Lanzamiento"
+      }
+    ],
+    "team_members": [
+      {
+        "profile_type": "Mobile Developer",
+        "description": "Desarrollador movil senior con experiencia en React Native y aplicaciones de salud.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Backend Developer",
+        "description": "Desarrollador backend con experiencia en FastAPI y bases de datos de series temporales.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "UX/UI Designer",
+        "description": "Disenador especializado en interfaces moviles y experiencia de usuario en apps de fitness.",
+        "quantity": 1,
+        "dedication": "part_time"
+      }
+    ],
+    "notes": "El presupuesto no incluye las tarifas de publicacion en App Store (99 USD/ano) ni Google Play (25 USD unico pago), que seran asumidas por el cliente."
+  },
+  "source": "client_portal",
+  "ingested_by": "laura.santos"
+}

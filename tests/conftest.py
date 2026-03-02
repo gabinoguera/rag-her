@@ -154,25 +154,33 @@ def _make_mock_generation_service() -> MagicMock:
     valid_response = LLMEstimationResponse(
         summary="Estimación de prueba para desarrollo backend",
         estimated_effort={
-            "optimistic": {"days": 5, "hours": 40},
-            "expected": {"days": 10, "hours": 80},
-            "pessimistic": {"days": 15, "hours": 120},
-        },
-        estimated_cost={
-            "optimistic": {"amount": 1750.0, "currency": "EUR"},
-            "expected": {"amount": 3500.0, "currency": "EUR"},
-            "pessimistic": {"amount": 5250.0, "currency": "EUR"},
-        },
-        suggested_unit_price={
-            "amount": 350.0,
-            "unit": "día",
-            "currency": "EUR",
-            "basis": "Mediana de precios unitarios en referencias históricas",
+            "optimistic": {"hours": 40},
+            "expected": {"hours": 80},
+            "pessimistic": {"hours": 120},
         },
         suggested_breakdown=[
-            {"name": "Desarrollo API", "days": 5, "unit_price": 350.0, "total": 1750.0},
-            {"name": "Testing", "days": 3, "unit_price": 350.0, "total": 1050.0},
-            {"name": "Documentación", "days": 2, "unit_price": 350.0, "total": 700.0},
+            {
+                "name": "Desarrollo API",
+                "tasks": [
+                    {"name": "Diseño de endpoints REST", "hours": 16},
+                    {"name": "Implementación de lógica de negocio", "hours": 16},
+                    {"name": "Testing unitario e integración", "hours": 8},
+                ],
+            },
+            {
+                "name": "Testing",
+                "tasks": [
+                    {"name": "Pruebas end-to-end", "hours": 12},
+                    {"name": "Pruebas de rendimiento", "hours": 12},
+                ],
+            },
+            {
+                "name": "Documentación",
+                "tasks": [
+                    {"name": "Documentación técnica API", "hours": 8},
+                    {"name": "Guía de despliegue", "hours": 8},
+                ],
+            },
         ],
         suggested_technologies=["Python", "FastAPI", "PostgreSQL"],
         notes="Estimación basada en 5 referencias históricas similares.",

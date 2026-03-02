@@ -10,19 +10,25 @@ from app.api.schemas.estimate_response import (
     BatchEstimateResponse,
     BatchEstimationItem,
     BreakdownItem,
+    BreakdownTask,
     ConfidenceScore,
-    CostDetail,
-    CostEstimate,
     EffortDetail,
     EffortEstimate,
     EstimateMetadata,
     EstimateResponse,
     EstimationDetail,
     ReferenceItem,
-    SuggestedUnitPrice,
 )
+from app.api.schemas.quote_generation import (
+    GenerateQuoteRequest,
+    GenerateQuoteResponse,
+    QuoteGenerationContext,
+    QuoteGenerationMetadata,
+)
+from app.api.schemas.quote_output import QuoteOutput
 from app.api.schemas.search_request import SearchFilters, SearchRequest
 from app.api.schemas.search_response import SearchResponse, SearchResultItem
+from app.api.schemas.transcription_analysis import TranscriptionAnalysis
 
 __all__ = [
     "AggregatedEstimation",
@@ -31,9 +37,8 @@ __all__ = [
     "BatchEstimationItem",
     "BatchQueryItem",
     "BreakdownItem",
+    "BreakdownTask",
     "ConfidenceScore",
-    "CostDetail",
-    "CostEstimate",
     "EffortDetail",
     "EffortEstimate",
     "EstimateMetadata",
@@ -42,10 +47,15 @@ __all__ = [
     "EstimationContext",
     "EstimationDetail",
     "EstimationOptions",
+    "GenerateQuoteRequest",
+    "GenerateQuoteResponse",
+    "QuoteGenerationContext",
+    "QuoteGenerationMetadata",
+    "QuoteOutput",
     "ReferenceItem",
     "SearchFilters",
     "SearchRequest",
     "SearchResponse",
     "SearchResultItem",
-    "SuggestedUnitPrice",
+    "TranscriptionAnalysis",
 ]

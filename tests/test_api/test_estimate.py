@@ -47,11 +47,14 @@ class TestEstimateEndpoint:
         )
         assert response.status_code == 200
         estimation = response.json()["estimation"]
-        for field in ("estimated_effort", "estimated_cost"):
-            data = estimation[field]
-            assert "optimistic" in data
-            assert "expected" in data
-            assert "pessimistic" in data
+        effort = estimation["estimated_effort"]
+        assert "optimistic" in effort
+        assert "expected" in effort
+        assert "pessimistic" in effort
+        # Should only have hours, not days or costs
+        assert "hours" in effort["expected"]
+        assert "days" not in effort["expected"]
+        assert "estimated_cost" not in estimation
 
     @pytest.mark.asyncio
     async def test_estimate_has_breakdown(
@@ -67,8 +70,11 @@ class TestEstimateEndpoint:
         assert len(breakdown) >= 1
         for item in breakdown:
             assert "name" in item
-            assert "days" in item
-            assert "total" in item
+            assert "tasks" in item
+            assert len(item["tasks"]) >= 1
+            for task in item["tasks"]:
+                assert "name" in task
+                assert "hours" in task
 
     @pytest.mark.asyncio
     async def test_estimate_has_confidence(
@@ -197,13 +203,13 @@ class TestEstimateEndpoint:
         body = response.json()
         aggregated = body["aggregated"]
 
-        # Sum of individual expected days should match aggregated
-        individual_days = sum(
-            item["estimation"]["estimated_effort"]["expected"]["days"]
+        # Sum of individual expected hours should match aggregated
+        individual_hours = sum(
+            item["estimation"]["estimated_effort"]["expected"]["hours"]
             for item in body["estimations"]
             if item.get("estimation")
         )
-        assert aggregated["total_estimated_effort"]["expected"]["days"] == individual_days
+        assert aggregated["total_estimated_effort"]["expected"]["hours"] == individual_hours
 
     @pytest.mark.asyncio
     async def test_estimate_batch_max_queries(

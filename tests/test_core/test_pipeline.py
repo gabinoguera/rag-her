@@ -42,23 +42,19 @@ def _make_valid_llm_response() -> LLMEstimationResponse:
     return LLMEstimationResponse(
         summary="Estimación de prueba",
         estimated_effort={
-            "optimistic": {"days": 5, "hours": 40},
-            "expected": {"days": 10, "hours": 80},
-            "pessimistic": {"days": 15, "hours": 120},
-        },
-        estimated_cost={
-            "optimistic": {"amount": 1750.0, "currency": "EUR"},
-            "expected": {"amount": 3500.0, "currency": "EUR"},
-            "pessimistic": {"amount": 5250.0, "currency": "EUR"},
-        },
-        suggested_unit_price={
-            "amount": 350.0,
-            "unit": "día",
-            "currency": "EUR",
-            "basis": "Mediana",
+            "optimistic": {"hours": 40},
+            "expected": {"hours": 80},
+            "pessimistic": {"hours": 120},
         },
         suggested_breakdown=[
-            {"name": "Desarrollo", "days": 10, "unit_price": 350.0, "total": 3500.0},
+            {
+                "name": "Desarrollo",
+                "tasks": [
+                    {"name": "Implementación de lógica", "hours": 40},
+                    {"name": "Testing unitario", "hours": 24},
+                    {"name": "Documentación técnica", "hours": 16},
+                ],
+            },
         ],
         suggested_technologies=["Python", "FastAPI"],
         notes="Estimación de prueba.",
@@ -115,8 +111,7 @@ class TestPipeline:
         result = await pipeline.estimate(request)
 
         assert result.estimation.summary == "Estimación de prueba"
-        assert result.estimation.estimated_effort.expected.days == 10
-        assert result.estimation.estimated_cost.expected.amount == 3500.0
+        assert result.estimation.estimated_effort.expected.hours == 80
         assert result.estimation.confidence.score > 0
         assert len(result.references) > 0
         assert result.metadata.llm_model == "gpt-4o"

@@ -6,32 +6,13 @@ from pydantic import BaseModel
 
 
 class EffortDetail(BaseModel):
-    days: int
     hours: int
-
-
-class CostDetail(BaseModel):
-    amount: float
-    currency: str
 
 
 class EffortEstimate(BaseModel):
     optimistic: EffortDetail
     expected: EffortDetail
     pessimistic: EffortDetail
-
-
-class CostEstimate(BaseModel):
-    optimistic: CostDetail
-    expected: CostDetail
-    pessimistic: CostDetail
-
-
-class SuggestedUnitPrice(BaseModel):
-    amount: float
-    unit: str
-    currency: str
-    basis: str
 
 
 class ConfidenceFactorsResponse(BaseModel):
@@ -51,11 +32,14 @@ class ConfidenceScore(BaseModel):
     factors: ConfidenceFactorsResponse
 
 
+class BreakdownTask(BaseModel):
+    name: str
+    hours: int
+
+
 class BreakdownItem(BaseModel):
     name: str
-    days: int
-    unit_price: float
-    total: float
+    tasks: list[BreakdownTask]
 
 
 class ReferenceItem(BaseModel):
@@ -73,8 +57,6 @@ class ReferenceItem(BaseModel):
 class EstimationDetail(BaseModel):
     summary: str
     estimated_effort: EffortEstimate
-    estimated_cost: CostEstimate
-    suggested_unit_price: SuggestedUnitPrice
     confidence: ConfidenceScore
     suggested_breakdown: list[BreakdownItem]
     suggested_technologies: list[str]
@@ -105,7 +87,6 @@ class BatchEstimationItem(BaseModel):
 
 class AggregatedEstimation(BaseModel):
     total_estimated_effort: EffortEstimate
-    total_estimated_cost: CostEstimate
     overall_confidence: float
 
 

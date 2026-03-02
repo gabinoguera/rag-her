@@ -37,7 +37,7 @@ class FakeChunk:
 
 class TestSystemPrompt:
     def test_system_prompt_contains_rules(self) -> None:
-        for i in range(1, 11):
+        for i in range(1, 10):
             assert f"{i}." in SYSTEM_PROMPT
 
 

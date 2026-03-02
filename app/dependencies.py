@@ -57,8 +57,7 @@ def get_generation_service(
     return GenerationService(
         api_key=settings.OPENAI_API_KEY,
         model=settings.LLM_MODEL,
-        max_tokens=settings.LLM_MAX_TOKENS,
-        temperature=settings.LLM_TEMPERATURE,
+        max_output_tokens=settings.LLM_MAX_OUTPUT_TOKENS,
         timeout=settings.LLM_TIMEOUT,
     )
 
@@ -74,4 +73,29 @@ async def get_estimation_pipeline(
         retrieval_service=retrieval_service,
         generation_service=generation_service,
         settings=settings,
+    )
+
+
+def get_reasoning_service(
+    settings: Settings = Depends(get_settings),
+) -> "ReasoningService":  # noqa: F821
+    from app.core.reasoning_service import ReasoningService
+
+    return ReasoningService(
+        api_key=settings.OPENAI_API_KEY,
+        model=settings.LLM_MODEL,
+        max_output_tokens=settings.LLM_MAX_OUTPUT_TOKENS,
+        timeout=settings.LLM_TIMEOUT,
+    )
+
+
+async def get_quote_generation_pipeline(
+    reasoning_service: "ReasoningService" = Depends(get_reasoning_service),  # noqa: F821
+    retrieval_service: "RetrievalService" = Depends(get_retrieval_service),  # noqa: F821
+) -> "QuoteGenerationPipeline":  # noqa: F821
+    from app.core.quote_generation_pipeline import QuoteGenerationPipeline
+
+    return QuoteGenerationPipeline(
+        reasoning_service=reasoning_service,
+        retrieval_service=retrieval_service,
     )

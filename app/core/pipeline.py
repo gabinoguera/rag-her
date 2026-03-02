@@ -15,17 +15,15 @@ from app.api.schemas.estimate_response import (
     BatchEstimateResponse,
     BatchEstimationItem,
     BreakdownItem,
+    BreakdownTask,
     ConfidenceFactorsResponse,
     ConfidenceScore,
-    CostDetail,
-    CostEstimate,
     EffortDetail,
     EffortEstimate,
     EstimateMetadata,
     EstimateResponse,
     EstimationDetail,
     ReferenceItem,
-    SuggestedUnitPrice,
 )
 from app.api.schemas.search_request import SearchFilters, SearchRequest
 from app.api.schemas.search_response import SearchResultItem
@@ -255,7 +253,6 @@ def _build_estimation_detail(
     currency: str,
 ) -> EstimationDetail:
     effort = llm.estimated_effort
-    cost = llm.estimated_cost
 
     def _to_dict(obj: Any) -> dict:
         if isinstance(obj, dict):
@@ -266,20 +263,6 @@ def _build_estimation_detail(
         optimistic=EffortDetail(**_to_dict(effort["optimistic"])),
         expected=EffortDetail(**_to_dict(effort["expected"])),
         pessimistic=EffortDetail(**_to_dict(effort["pessimistic"])),
-    )
-
-    cost_estimate = CostEstimate(
-        optimistic=CostDetail(**_to_dict(cost["optimistic"])),
-        expected=CostDetail(**_to_dict(cost["expected"])),
-        pessimistic=CostDetail(**_to_dict(cost["pessimistic"])),
-    )
-
-    unit_price_data = llm.suggested_unit_price
-    suggested_unit_price = SuggestedUnitPrice(
-        amount=unit_price_data.get("amount", 0),
-        unit=unit_price_data.get("unit", "día"),
-        currency=unit_price_data.get("currency", currency),
-        basis=unit_price_data.get("basis", ""),
     )
 
     conf_factors = ConfidenceFactorsResponse(
@@ -302,9 +285,10 @@ def _build_estimation_detail(
     breakdown = [
         BreakdownItem(
             name=item.name,
-            days=item.days,
-            unit_price=item.unit_price,
-            total=item.total,
+            tasks=[
+                BreakdownTask(name=task.name, hours=task.hours)
+                for task in item.tasks
+            ],
         )
         for item in llm.suggested_breakdown
     ]
@@ -312,8 +296,6 @@ def _build_estimation_detail(
     return EstimationDetail(
         summary=llm.summary,
         estimated_effort=effort_estimate,
-        estimated_cost=cost_estimate,
-        suggested_unit_price=suggested_unit_price,
         confidence=conf_score,
         suggested_breakdown=breakdown,
         suggested_technologies=llm.suggested_technologies,
@@ -346,31 +328,22 @@ def _aggregate_estimations(
     results: list[EstimateResponse], currency: str
 ) -> AggregatedEstimation:
     if not results:
-        zero_effort = EffortDetail(days=0, hours=0)
-        zero_cost = CostDetail(amount=0.0, currency=currency)
+        zero_effort = EffortDetail(hours=0)
         return AggregatedEstimation(
             total_estimated_effort=EffortEstimate(
                 optimistic=zero_effort, expected=zero_effort, pessimistic=zero_effort
-            ),
-            total_estimated_cost=CostEstimate(
-                optimistic=zero_cost, expected=zero_cost, pessimistic=zero_cost
             ),
             overall_confidence=0.0,
         )
 
     scenarios = ["optimistic", "expected", "pessimistic"]
     effort_totals = {}
-    cost_totals = {}
 
     for scenario in scenarios:
-        total_days = sum(
-            getattr(r.estimation.estimated_effort, scenario).days for r in results
+        total_hours = sum(
+            getattr(r.estimation.estimated_effort, scenario).hours for r in results
         )
-        total_amount = sum(
-            getattr(r.estimation.estimated_cost, scenario).amount for r in results
-        )
-        effort_totals[scenario] = EffortDetail(days=total_days, hours=total_days * 8)
-        cost_totals[scenario] = CostDetail(amount=round(total_amount, 2), currency=currency)
+        effort_totals[scenario] = EffortDetail(hours=total_hours)
 
     avg_confidence = (
         sum(r.estimation.confidence.score for r in results) / len(results)
@@ -378,6 +351,5 @@ def _aggregate_estimations(
 
     return AggregatedEstimation(
         total_estimated_effort=EffortEstimate(**effort_totals),
-        total_estimated_cost=CostEstimate(**cost_totals),
         overall_confidence=round(avg_confidence, 2),
     )

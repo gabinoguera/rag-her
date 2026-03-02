@@ -38,14 +38,12 @@ class GenerationService:
         self,
         api_key: str,
         model: str,
-        max_tokens: int = 4096,
-        temperature: float = 0.2,
-        timeout: int = 30,
+        max_output_tokens: int = 16384,
+        timeout: int = 120,
     ) -> None:
         self._client = AsyncOpenAI(api_key=api_key, timeout=timeout, max_retries=0)
         self._model = model
-        self._max_tokens = max_tokens
-        self._temperature = temperature
+        self._max_output_tokens = max_output_tokens
 
     async def generate_estimation(
         self,
@@ -59,13 +57,8 @@ class GenerationService:
             query, context, chunks, currency
         )
 
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
-
         try:
-            raw = await self._call_llm_with_retries(messages)
+            raw = await self._call_llm_with_retries(system_prompt, user_prompt)
         except GenerationError:
             await logger.awarning("LLM call failed, using fallback estimation")
             return self.build_fallback_estimation(chunks, currency), chunks_used
@@ -75,20 +68,19 @@ class GenerationService:
             return parsed, chunks_used
         except ParseError:
             await logger.awarning("Parse failed, retrying with correction prompt")
-            messages.append({"role": "assistant", "content": raw})
-            messages.append({"role": "user", "content": CORRECTION_PROMPT})
+            correction_user = f"{user_prompt}\n\n---\nTu respuesta anterior:\n{raw}\n\n---\n{CORRECTION_PROMPT}"
             try:
-                raw_retry = await self._call_llm_with_retries(messages)
+                raw_retry = await self._call_llm_with_retries(system_prompt, correction_user)
                 parsed = parse_llm_response(raw_retry, currency)
                 return parsed, chunks_used
             except (ParseError, GenerationError):
                 await logger.awarning("Correction retry failed, using fallback")
                 return self.build_fallback_estimation(chunks, currency), chunks_used
 
-    async def _call_llm_with_retries(self, messages: list[dict]) -> str:
+    async def _call_llm_with_retries(self, system_prompt: str, user_prompt: str) -> str:
         """Call the LLM with retry logic per error type."""
         try:
-            return await self._call_llm(messages)
+            return await self._call_llm(system_prompt, user_prompt)
         except AuthenticationError as e:
             await logger.aerror("OpenAI authentication failed", error=str(e))
             raise GenerationError(f"Authentication failed: {e}") from e
@@ -100,7 +92,7 @@ class GenerationService:
                 )
                 await asyncio.sleep(delay)
                 try:
-                    return await self._call_llm(messages)
+                    return await self._call_llm(system_prompt, user_prompt)
                 except RateLimitError:
                     continue
                 except AuthenticationError as auth_e:
@@ -110,7 +102,7 @@ class GenerationService:
             # 1 retry
             await logger.awarning("LLM timeout, retrying once")
             try:
-                return await self._call_llm(messages)
+                return await self._call_llm(system_prompt, user_prompt)
             except (APITimeoutError, APIError) as retry_e:
                 raise GenerationError(f"LLM timeout after retry: {retry_e}") from retry_e
         except APIError as e:
@@ -122,20 +114,20 @@ class GenerationService:
                         "Server error, retrying", attempt=attempt, status=status
                     )
                     try:
-                        return await self._call_llm(messages)
+                        return await self._call_llm(system_prompt, user_prompt)
                     except APIError:
                         continue
             raise GenerationError(f"API error: {e}") from e
 
-    async def _call_llm(self, messages: list[dict]) -> str:
-        """Single LLM call."""
-        response = await self._client.chat.completions.create(
+    async def _call_llm(self, system_prompt: str, user_prompt: str) -> str:
+        """Single LLM call using Responses API."""
+        response = await self._client.responses.create(
             model=self._model,
-            messages=messages,
-            max_tokens=self._max_tokens,
-            temperature=self._temperature,
+            instructions=system_prompt,
+            input=[{"role": "user", "content": user_prompt}],
+            max_output_tokens=self._max_output_tokens,
         )
-        content = response.choices[0].message.content
+        content = response.output_text
         if not content:
             raise GenerationError("Empty response from LLM")
         return content
@@ -152,7 +144,7 @@ class GenerationService:
         else:
             median_cost = 0.0
 
-        # Estimate days from costs using a rough unit price
+        # Estimate hours from costs using a rough hourly rate
         meta_prices = []
         for c in chunks:
             meta = getattr(c, "metadata", None) or {}
@@ -162,19 +154,20 @@ class GenerationService:
                     meta_prices.append(float(up))
 
         if meta_prices:
-            unit_price = statistics.median(meta_prices)
+            daily_rate = statistics.median(meta_prices)
         else:
-            unit_price = 350.0  # fallback default
+            daily_rate = 350.0  # fallback default
 
-        expected_days = max(1, round(median_cost / unit_price)) if unit_price > 0 else 1
-        optimistic_days = max(1, round(expected_days * 0.7))
-        pessimistic_days = max(expected_days + 1, round(expected_days * 1.5))
+        expected_days = max(1, round(median_cost / daily_rate)) if daily_rate > 0 else 1
+        expected_hours = expected_days * 8
+        optimistic_hours = max(8, round(expected_hours * 0.7))
+        pessimistic_hours = max(expected_hours + 8, round(expected_hours * 1.5))
 
         # Ensure strict ordering
-        if optimistic_days >= expected_days:
-            optimistic_days = max(1, expected_days - 1)
-        if pessimistic_days <= expected_days:
-            pessimistic_days = expected_days + 1
+        if optimistic_hours >= expected_hours:
+            optimistic_hours = max(8, expected_hours - 8)
+        if pessimistic_hours <= expected_hours:
+            pessimistic_hours = expected_hours + 8
 
         all_techs: set[str] = set()
         for c in chunks:
@@ -184,27 +177,16 @@ class GenerationService:
         return LLMEstimationResponse(
             summary="Estimación degradada generada a partir de datos estadísticos (el LLM no respondió correctamente).",
             estimated_effort={
-                "optimistic": {"days": optimistic_days, "hours": optimistic_days * 8},
-                "expected": {"days": expected_days, "hours": expected_days * 8},
-                "pessimistic": {"days": pessimistic_days, "hours": pessimistic_days * 8},
-            },
-            estimated_cost={
-                "optimistic": {"amount": round(optimistic_days * unit_price, 2), "currency": currency},
-                "expected": {"amount": round(expected_days * unit_price, 2), "currency": currency},
-                "pessimistic": {"amount": round(pessimistic_days * unit_price, 2), "currency": currency},
-            },
-            suggested_unit_price={
-                "amount": unit_price,
-                "unit": "día",
-                "currency": currency,
-                "basis": "Mediana de precios unitarios en referencias históricas (fallback estadístico)",
+                "optimistic": {"hours": optimistic_hours},
+                "expected": {"hours": expected_hours},
+                "pessimistic": {"hours": pessimistic_hours},
             },
             suggested_breakdown=[
                 {
-                    "name": "Estimación general (fallback)",
-                    "days": expected_days,
-                    "unit_price": unit_price,
-                    "total": round(expected_days * unit_price, 2),
+                    "name": "General",
+                    "tasks": [
+                        {"name": "Estimación general (fallback)", "hours": expected_hours},
+                    ],
                 }
             ],
             suggested_technologies=sorted(all_techs),

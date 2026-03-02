@@ -5,29 +5,37 @@ import pytest
 from app.core.response_parser import ParseError, parse_llm_response
 
 
-def _valid_response_dict(currency: str = "EUR") -> dict:
+def _valid_response_dict() -> dict:
     return {
         "summary": "Estimación para desarrollo de módulo de autenticación",
         "estimated_effort": {
-            "optimistic": {"days": 5, "hours": 40},
-            "expected": {"days": 10, "hours": 80},
-            "pessimistic": {"days": 15, "hours": 120},
-        },
-        "estimated_cost": {
-            "optimistic": {"amount": 1750.0, "currency": currency},
-            "expected": {"amount": 3500.0, "currency": currency},
-            "pessimistic": {"amount": 5250.0, "currency": currency},
-        },
-        "suggested_unit_price": {
-            "amount": 350.0,
-            "unit": "día",
-            "currency": currency,
-            "basis": "Mediana de precios unitarios",
+            "optimistic": {"hours": 40},
+            "expected": {"hours": 80},
+            "pessimistic": {"hours": 120},
         },
         "suggested_breakdown": [
-            {"name": "Backend API", "days": 5, "unit_price": 350.0, "total": 1750.0},
-            {"name": "Testing", "days": 3, "unit_price": 350.0, "total": 1050.0},
-            {"name": "Docs", "days": 2, "unit_price": 350.0, "total": 700.0},
+            {
+                "name": "Backend API",
+                "tasks": [
+                    {"name": "Diseño de endpoints", "hours": 16},
+                    {"name": "Implementación de lógica", "hours": 16},
+                    {"name": "Testing unitario", "hours": 8},
+                ],
+            },
+            {
+                "name": "Testing",
+                "tasks": [
+                    {"name": "Pruebas de integración", "hours": 12},
+                    {"name": "Pruebas e2e", "hours": 12},
+                ],
+            },
+            {
+                "name": "Docs",
+                "tasks": [
+                    {"name": "Documentación técnica", "hours": 8},
+                    {"name": "Guía de uso", "hours": 8},
+                ],
+            },
         ],
         "suggested_technologies": ["Python", "FastAPI"],
         "notes": "Basado en 5 referencias.",
@@ -39,8 +47,7 @@ class TestParseValidJSON:
         raw = json.dumps(_valid_response_dict())
         result = parse_llm_response(raw, "EUR")
         assert result.summary == "Estimación para desarrollo de módulo de autenticación"
-        assert result.estimated_effort["expected"].days == 10
-        assert result.estimated_cost["expected"].amount == 3500.0
+        assert result.estimated_effort["expected"].hours == 80
         assert len(result.suggested_breakdown) == 3
 
     def test_parse_json_in_markdown_block(self) -> None:
@@ -60,22 +67,12 @@ class TestCoherenceFixes:
     def test_coherence_reorder(self) -> None:
         data = _valid_response_dict()
         # Swap optimistic and pessimistic effort
-        data["estimated_effort"]["optimistic"]["days"] = 15
         data["estimated_effort"]["optimistic"]["hours"] = 120
-        data["estimated_effort"]["pessimistic"]["days"] = 5
         data["estimated_effort"]["pessimistic"]["hours"] = 40
         raw = json.dumps(data)
         result = parse_llm_response(raw, "EUR")
-        assert result.estimated_effort["optimistic"].days < result.estimated_effort["expected"].days
-        assert result.estimated_effort["expected"].days < result.estimated_effort["pessimistic"].days
-
-    def test_hours_recalculation(self) -> None:
-        data = _valid_response_dict()
-        # Set wrong hours
-        data["estimated_effort"]["expected"]["hours"] = 999
-        raw = json.dumps(data)
-        result = parse_llm_response(raw, "EUR")
-        assert result.estimated_effort["expected"].hours == 10 * 8  # days * 8
+        assert result.estimated_effort["optimistic"].hours < result.estimated_effort["expected"].hours
+        assert result.estimated_effort["expected"].hours < result.estimated_effort["pessimistic"].hours
 
 
 class TestErrors:
@@ -88,9 +85,8 @@ class TestErrors:
         with pytest.raises(ParseError):
             parse_llm_response(json.dumps(data), "EUR")
 
-    def test_negative_days_raises(self) -> None:
+    def test_negative_hours_raises(self) -> None:
         data = _valid_response_dict()
-        data["estimated_effort"]["optimistic"]["days"] = -1
         data["estimated_effort"]["optimistic"]["hours"] = -8
         with pytest.raises(ParseError):
             parse_llm_response(json.dumps(data), "EUR")
