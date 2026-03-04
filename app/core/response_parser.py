@@ -88,6 +88,45 @@ def _fix_coherence(data: dict, currency: str) -> list[str]:
     return warnings
 
 
+class ValidatedBreakdownTask(BaseModel):
+    name: str
+    original_hours: int = Field(gt=0)
+    validated_hours: int = Field(gt=0)
+    adjustment_reason: str | None = None
+    references_found: int = 0
+
+
+class ValidatedBreakdownItem(BaseModel):
+    name: str
+    tasks: list[ValidatedBreakdownTask] = Field(min_length=1)
+
+
+class LLMValidationResponse(BaseModel):
+    validated_breakdown: list[ValidatedBreakdownItem]
+    estimated_effort: dict[str, LLMEffortEstimate]
+    adjustment_notes: str
+
+
+def parse_validation_response(raw: str, currency: str = "EUR") -> LLMValidationResponse:
+    """Parse and validate the validation LLM response."""
+    json_str = _extract_json(raw)
+
+    try:
+        data = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ParseError(f"Invalid JSON: {e}") from e
+
+    if not isinstance(data, dict):
+        raise ParseError("Expected a JSON object at top level")
+
+    _fix_coherence(data, currency)
+
+    try:
+        return LLMValidationResponse.model_validate(data)
+    except Exception as e:
+        raise ParseError(f"Validation response validation failed: {e}") from e
+
+
 def parse_llm_response(raw: str, currency: str = "EUR") -> LLMEstimationResponse:
     """Parse and validate the LLM response."""
     json_str = _extract_json(raw)

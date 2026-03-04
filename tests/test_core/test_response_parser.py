@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from app.core.response_parser import ParseError, parse_llm_response
+from app.core.response_parser import ParseError, parse_llm_response, parse_validation_response
 
 
 def _valid_response_dict() -> dict:
@@ -90,3 +90,64 @@ class TestErrors:
         data["estimated_effort"]["optimistic"]["hours"] = -8
         with pytest.raises(ParseError):
             parse_llm_response(json.dumps(data), "EUR")
+
+
+def _valid_validation_dict() -> dict:
+    return {
+        "validated_breakdown": [
+            {
+                "name": "Backend API",
+                "tasks": [
+                    {
+                        "name": "Diseño de endpoints",
+                        "original_hours": 16,
+                        "validated_hours": 20,
+                        "adjustment_reason": "Datos históricos sugieren 20h",
+                        "references_found": 3,
+                    },
+                    {
+                        "name": "Implementación de lógica",
+                        "original_hours": 16,
+                        "validated_hours": 16,
+                        "adjustment_reason": None,
+                        "references_found": 0,
+                    },
+                ],
+            }
+        ],
+        "estimated_effort": {
+            "optimistic": {"hours": 30},
+            "expected": {"hours": 36},
+            "pessimistic": {"hours": 48},
+        },
+        "adjustment_notes": "Se ajustó diseño de endpoints según histórico.",
+    }
+
+
+class TestParseValidationResponse:
+    def test_parse_valid_validation(self) -> None:
+        raw = json.dumps(_valid_validation_dict())
+        result = parse_validation_response(raw, "EUR")
+        assert len(result.validated_breakdown) == 1
+        tasks = result.validated_breakdown[0].tasks
+        assert tasks[0].validated_hours == 20
+        assert tasks[0].original_hours == 16
+        assert tasks[0].references_found == 3
+        assert tasks[1].adjustment_reason is None
+
+    def test_parse_validation_fixes_effort_order(self) -> None:
+        data = _valid_validation_dict()
+        data["estimated_effort"]["optimistic"]["hours"] = 48
+        data["estimated_effort"]["pessimistic"]["hours"] = 30
+        raw = json.dumps(data)
+        result = parse_validation_response(raw, "EUR")
+        assert result.estimated_effort["optimistic"].hours < result.estimated_effort["pessimistic"].hours
+
+    def test_parse_validation_invalid_json(self) -> None:
+        with pytest.raises(ParseError):
+            parse_validation_response("not json", "EUR")
+
+    def test_parse_validation_missing_fields(self) -> None:
+        data = {"adjustment_notes": "incomplete"}
+        with pytest.raises(ParseError):
+            parse_validation_response(json.dumps(data), "EUR")

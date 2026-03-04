@@ -4,8 +4,8 @@ import structlog
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.schemas.common import ErrorResponse
-from app.api.schemas.estimate_request import BatchEstimateRequest, EstimateRequest
-from app.api.schemas.estimate_response import BatchEstimateResponse, EstimateResponse
+from app.api.schemas.estimate_request import BatchEstimateRequest, EstimateRequest, ValidateRequest
+from app.api.schemas.estimate_response import BatchEstimateResponse, EstimateResponse, ValidateResponse
 from app.core.embeddings import EmbeddingError
 from app.core.generation import GenerationError
 from app.core.pipeline import EstimationPipeline, NoRelevantChunksError
@@ -36,6 +36,32 @@ async def estimate(
         return await pipeline.estimate(request)
     except NoRelevantChunksError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except EmbeddingError as e:
+        raise HTTPException(
+            status_code=503, detail=f"Embedding service unavailable: {e}"
+        )
+    except GenerationError as e:
+        raise HTTPException(
+            status_code=503, detail=f"LLM service unavailable: {e}"
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="LLM request timed out")
+
+
+@router.post(
+    "/estimate/validate",
+    response_model=ValidateResponse,
+    responses={
+        503: {"model": ErrorResponse, "description": "LLM or embedding service unavailable"},
+        504: {"model": ErrorResponse, "description": "LLM timeout"},
+    },
+)
+async def validate_breakdown(
+    request: ValidateRequest,
+    pipeline: EstimationPipeline = Depends(get_estimation_pipeline),
+) -> ValidateResponse:
+    try:
+        return await pipeline.validate_breakdown(request)
     except EmbeddingError as e:
         raise HTTPException(
             status_code=503, detail=f"Embedding service unavailable: {e}"

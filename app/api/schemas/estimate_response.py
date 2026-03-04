@@ -35,6 +35,9 @@ class ConfidenceScore(BaseModel):
 class BreakdownTask(BaseModel):
     name: str
     hours: int
+    original_hours: int | None = None
+    adjustment_reason: str | None = None
+    references_found: int = 0
 
 
 class BreakdownItem(BaseModel):
@@ -70,6 +73,9 @@ class EstimateMetadata(BaseModel):
     chunks_retrieved: int
     chunks_used_for_generation: int
     processing_time_ms: int
+    task_validation_enabled: bool = False
+    tasks_validated: int = 0
+    tasks_with_references: int = 0
 
 
 class EstimateResponse(BaseModel):
@@ -94,3 +100,11 @@ class BatchEstimateResponse(BaseModel):
     estimations: list[BatchEstimationItem]
     aggregated: AggregatedEstimation
     metadata: EstimateMetadata
+
+
+class ValidateResponse(BaseModel):
+    validated_breakdown: list[BreakdownItem]
+    estimated_effort: EffortEstimate
+    adjustment_notes: str
+    tasks_validated: int
+    tasks_with_references: int

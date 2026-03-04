@@ -40,6 +40,23 @@ class RetrievalService:
         self._embedding_service = embedding_service
         self._settings = settings
 
+    async def search_for_task(
+        self,
+        task_query: str,
+        top_k: int = 5,
+        min_similarity: float = 0.5,
+    ) -> SearchResponse:
+        """Targeted search for a specific task, filtered to line_item chunks."""
+        from app.api.schemas.search_request import SearchFilters
+
+        request = SearchRequest(
+            query=task_query,
+            filters=SearchFilters(chunk_types=["line_item"]),
+            top_k=top_k,
+            min_similarity=min_similarity,
+        )
+        return await self.search(request)
+
     async def search(self, request: SearchRequest) -> SearchResponse:
         start_time = time.monotonic()
 

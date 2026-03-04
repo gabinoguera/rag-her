@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     MAX_TOP_K: int = 50
     HNSW_EF_SEARCH: int = 100
 
+    # Task validation (second pass)
+    ENABLE_TASK_VALIDATION: bool = True
+    TASK_VALIDATION_TOP_K: int = 5
+    TASK_VALIDATION_MIN_SIMILARITY: float = 0.5
+    MAX_TASKS_FOR_VALIDATION: int = 25
+
     @field_validator("DATABASE_URL")
     @classmethod
     def database_url_must_be_postgresql(cls, v: str) -> str:

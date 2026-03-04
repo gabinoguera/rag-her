@@ -54,6 +54,48 @@ RESPONSE_JSON_SCHEMA = json.dumps(
 
 MAX_PROMPT_TOKENS = 12000
 
+VALIDATION_SYSTEM_PROMPT = """\
+Eres un experto en estimación de proyectos de software. Tu tarea es VALIDAR y AJUSTAR \
+una estimación existente utilizando datos históricos específicos para cada tarea.
+
+REGLAS ESTRICTAS:
+1. Para cada tarea, compara las horas propuestas con los datos históricos proporcionados.
+2. Si los datos históricos sugieren un rango diferente, ajusta las horas y explica por qué.
+3. Si no hay datos históricos para una tarea, mantén las horas originales y marca \
+"Sin referencia histórica" como razón.
+4. Las horas totales (optimistic/expected/pessimistic) deben recalcularse como la suma \
+de las horas validadas de todas las tareas.
+5. Mantén la relación: optimistic < expected < pessimistic.
+6. Responde ÚNICAMENTE con un JSON válido siguiendo el schema proporcionado.
+7. Las horas deben ser números enteros."""
+
+VALIDATION_JSON_SCHEMA = json.dumps(
+    {
+        "validated_breakdown": [
+            {
+                "name": "string — Nombre del bloque funcional",
+                "tasks": [
+                    {
+                        "name": "string — Nombre de la tarea",
+                        "original_hours": "int — Horas originales propuestas",
+                        "validated_hours": "int — Horas tras validación",
+                        "adjustment_reason": "string | null — Razón del ajuste",
+                        "references_found": "int — Número de referencias históricas",
+                    }
+                ],
+            }
+        ],
+        "estimated_effort": {
+            "optimistic": {"hours": "int"},
+            "expected": {"hours": "int"},
+            "pessimistic": {"hours": "int"},
+        },
+        "adjustment_notes": "string — Resumen de los ajustes realizados",
+    },
+    indent=2,
+    ensure_ascii=False,
+)
+
 
 def _format_scope_block(i: int, chunk: Any, currency: str) -> str:
     meta = chunk.metadata or {}
@@ -217,3 +259,69 @@ def build_estimation_prompt(
     user_prompt = prefix + chunks_header + formatted_chunks + suffix
 
     return SYSTEM_PROMPT, user_prompt, len(used_chunks)
+
+
+def build_validation_prompt(
+    original_breakdown: list[Any],
+    task_references: list[Any],
+    original_effort: dict,
+    currency: str = "EUR",
+) -> tuple[str, str]:
+    """Build (system_prompt, user_prompt) for the validation pass."""
+    ref_lookup: dict[tuple[str, str], Any] = {
+        (r.block_name, r.task_name): r for r in task_references
+    }
+
+    sections: list[str] = []
+    sections.append("## Estimación original a validar:\n")
+
+    for block in original_breakdown:
+        block_name = block.name if hasattr(block, "name") else block["name"]
+        tasks = block.tasks if hasattr(block, "tasks") else block["tasks"]
+        sections.append(f"### Bloque: {block_name}")
+
+        for task in tasks:
+            task_name = task.name if hasattr(task, "name") else task["name"]
+            task_hours = task.hours if hasattr(task, "hours") else task["hours"]
+            sections.append(f"  - Tarea: {task_name} — {task_hours} horas propuestas")
+
+            ref = ref_lookup.get((block_name, task_name))
+            if ref and ref.historical_hours:
+                avg_h = sum(ref.historical_hours) / len(ref.historical_hours)
+                min_h = min(ref.historical_hours)
+                max_h = max(ref.historical_hours)
+                sections.append(
+                    f"    Datos históricos ({len(ref.historical_hours)} referencias, "
+                    f"similitud promedio: {ref.avg_similarity:.2f}):"
+                )
+                sections.append(
+                    f"    - Rango: {min_h:.0f}h - {max_h:.0f}h, "
+                    f"Promedio: {avg_h:.0f}h"
+                )
+                for i, chunk in enumerate(ref.chunks[:3], 1):
+                    meta = chunk.metadata or {} if hasattr(chunk, "metadata") else {}
+                    sections.append(
+                        f"    Ref {i}: {meta.get('item_name', 'N/A')} — "
+                        f"{meta.get('quantity', '?')} {meta.get('unit', '?')} "
+                        f"(sim: {chunk.similarity_score:.2f})"
+                    )
+            else:
+                sections.append("    Sin datos históricos específicos para esta tarea.")
+
+    opt = original_effort.get("optimistic", {})
+    exp = original_effort.get("expected", {})
+    pes = original_effort.get("pessimistic", {})
+    opt_h = opt.get("hours", opt.hours) if hasattr(opt, "hours") else opt.get("hours", "?")
+    exp_h = exp.get("hours", exp.hours) if hasattr(exp, "hours") else exp.get("hours", "?")
+    pes_h = pes.get("hours", pes.hours) if hasattr(pes, "hours") else pes.get("hours", "?")
+
+    sections.append(f"\n## Esfuerzo original:")
+    sections.append(f"  Optimista: {opt_h}h")
+    sections.append(f"  Esperado: {exp_h}h")
+    sections.append(f"  Pesimista: {pes_h}h")
+
+    sections.append(f"\n## Moneda: {currency}")
+    sections.append(f"\n## Schema de respuesta JSON requerido:\n{VALIDATION_JSON_SCHEMA}")
+
+    user_prompt = "\n".join(sections)
+    return VALIDATION_SYSTEM_PROMPT, user_prompt

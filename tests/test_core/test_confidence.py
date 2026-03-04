@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from app.core.confidence import (
     _references_factor,
     _score_to_level,
+    _task_validation_factor,
     calculate_confidence,
 )
 
@@ -90,4 +91,77 @@ class TestConfidence:
         ]
         result = calculate_confidence(chunks, query_technologies=["React"])
         # ref=1.0*0.35 + sim=1.0*0.30 + tech=1.0*0.20 + var=1.0*0.15 = 1.0
+        assert result.score == 1.0
+
+
+@dataclass
+class FakeTaskSearchResult:
+    historical_hours: list[float] | None = None
+
+
+class TestTaskValidationFactor:
+    def test_all_tasks_have_refs(self) -> None:
+        results = [
+            FakeTaskSearchResult(historical_hours=[40.0]),
+            FakeTaskSearchResult(historical_hours=[24.0, 32.0]),
+        ]
+        coverage, factor = _task_validation_factor(results)
+        assert coverage == 1.0
+        assert factor == 1.0
+
+    def test_no_tasks_have_refs(self) -> None:
+        results = [
+            FakeTaskSearchResult(historical_hours=[]),
+            FakeTaskSearchResult(historical_hours=[]),
+        ]
+        coverage, factor = _task_validation_factor(results)
+        assert coverage == 0.0
+        assert factor == 0.0
+
+    def test_partial_coverage(self) -> None:
+        results = [
+            FakeTaskSearchResult(historical_hours=[40.0]),
+            FakeTaskSearchResult(historical_hours=[]),
+            FakeTaskSearchResult(historical_hours=[]),
+            FakeTaskSearchResult(historical_hours=[16.0]),
+        ]
+        coverage, factor = _task_validation_factor(results)
+        assert coverage == 0.5
+        assert factor == 0.5
+
+    def test_empty_results(self) -> None:
+        coverage, factor = _task_validation_factor([])
+        assert coverage == 0.0
+        assert factor == 0.0
+
+
+class TestConfidenceWithValidation:
+    def test_confidence_with_task_validation(self) -> None:
+        chunks = [
+            FakeChunk(similarity_score=0.8, technologies=["React"], total_cost=1000)
+            for _ in range(5)
+        ]
+        task_results = [
+            FakeTaskSearchResult(historical_hours=[40.0]),
+            FakeTaskSearchResult(historical_hours=[24.0]),
+            FakeTaskSearchResult(historical_hours=[]),
+        ]
+        result = calculate_confidence(
+            chunks,
+            query_technologies=["React"],
+            task_search_results=task_results,
+        )
+        assert result.score > 0
+
+    def test_confidence_without_validation_uses_original_weights(self) -> None:
+        chunks = [
+            FakeChunk(
+                similarity_score=1.0,
+                technologies=["React"],
+                total_cost=1000,
+            )
+            for _ in range(15)
+        ]
+        result = calculate_confidence(chunks, query_technologies=["React"])
+        # Without validation: 0.35 + 0.30 + 0.20 + 0.15 = 1.0
         assert result.score == 1.0

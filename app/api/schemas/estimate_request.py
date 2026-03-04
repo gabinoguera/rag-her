@@ -19,6 +19,7 @@ class EstimationOptions(BaseModel):
     include_references: bool = True
     estimation_format: str = Field(default="detailed", pattern="^(summary|detailed)$")
     currency: str = Field(default="EUR", min_length=3, max_length=3)
+    skip_validation: bool = False
 
     @field_validator("chunk_types")
     @classmethod
@@ -49,3 +50,19 @@ class BatchEstimateRequest(BaseModel):
     queries: list[BatchQueryItem] = Field(min_length=1, max_length=20)
     shared_context: EstimationContext | None = None
     options: EstimationOptions | None = None
+
+
+class ValidateBreakdownTask(BaseModel):
+    name: str
+    hours: int = Field(ge=0)
+
+
+class ValidateBreakdownBlock(BaseModel):
+    name: str
+    tasks: list[ValidateBreakdownTask] = Field(min_length=1)
+
+
+class ValidateRequest(BaseModel):
+    breakdown: list[ValidateBreakdownBlock] = Field(min_length=1)
+    estimated_effort: dict
+    currency: str = Field(default="EUR", min_length=3, max_length=3)

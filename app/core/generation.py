@@ -13,8 +13,14 @@ from openai import (
     RateLimitError,
 )
 
-from app.core.prompt_builder import RESPONSE_JSON_SCHEMA, build_estimation_prompt
-from app.core.response_parser import LLMEstimationResponse, ParseError, parse_llm_response
+from app.core.prompt_builder import RESPONSE_JSON_SCHEMA, build_estimation_prompt, build_validation_prompt
+from app.core.response_parser import (
+    LLMEstimationResponse,
+    LLMValidationResponse,
+    ParseError,
+    parse_llm_response,
+    parse_validation_response,
+)
 
 logger = structlog.stdlib.get_logger()
 
@@ -131,6 +137,33 @@ class GenerationService:
         if not content:
             raise GenerationError("Empty response from LLM")
         return content
+
+    async def validate_estimation(
+        self,
+        original_breakdown: list[Any],
+        task_references: list[Any],
+        original_effort: dict,
+        currency: str = "EUR",
+    ) -> LLMValidationResponse | None:
+        """Second-pass: validate hours using per-task historical references.
+
+        Returns None if validation fails (caller should use original estimation).
+        """
+        system_prompt, user_prompt = build_validation_prompt(
+            original_breakdown, task_references, original_effort, currency
+        )
+
+        try:
+            raw = await self._call_llm_with_retries(system_prompt, user_prompt)
+        except GenerationError:
+            await logger.awarning("Validation LLM call failed, returning original")
+            return None
+
+        try:
+            return parse_validation_response(raw, currency)
+        except ParseError:
+            await logger.awarning("Validation parse failed, returning original")
+            return None
 
     @staticmethod
     def build_fallback_estimation(

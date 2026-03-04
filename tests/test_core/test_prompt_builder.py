@@ -4,7 +4,9 @@ from app.core.prompt_builder import (
     MAX_PROMPT_TOKENS,
     RESPONSE_JSON_SCHEMA,
     SYSTEM_PROMPT,
+    VALIDATION_SYSTEM_PROMPT,
     build_estimation_prompt,
+    build_validation_prompt,
 )
 
 
@@ -123,3 +125,91 @@ class TestPromptSize:
         )
         assert chunks_used < 200
         assert chunks_used >= 1
+
+
+@dataclass
+class FakeTaskSearchResult:
+    block_name: str = "Backend"
+    task_name: str = "Implementación API"
+    chunks: list = field(default_factory=list)
+    historical_hours: list[float] = field(default_factory=list)
+    avg_similarity: float = 0.0
+
+
+@dataclass
+class FakeBreakdownItem:
+    name: str = "Backend"
+    tasks: list = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if not self.tasks:
+            self.tasks = [FakeBreakdownTask()]
+
+
+@dataclass
+class FakeBreakdownTask:
+    name: str = "Implementación API"
+    hours: int = 40
+
+
+class TestValidationPrompt:
+    def test_contains_original_breakdown(self) -> None:
+        breakdown = [FakeBreakdownItem()]
+        refs = [FakeTaskSearchResult()]
+        effort = {
+            "optimistic": {"hours": 30},
+            "expected": {"hours": 40},
+            "pessimistic": {"hours": 60},
+        }
+        sys_prompt, user_prompt = build_validation_prompt(breakdown, refs, effort)
+        assert "VALIDAR" in sys_prompt
+        assert "Backend" in user_prompt
+        assert "Implementación API" in user_prompt
+        assert "40 horas propuestas" in user_prompt
+
+    def test_includes_historical_data(self) -> None:
+        ref_chunk = FakeChunk(
+            chunk_type="line_item",
+            similarity_score=0.82,
+            metadata={"item_name": "API REST", "quantity": 5, "unit": "días"},
+        )
+        refs = [
+            FakeTaskSearchResult(
+                chunks=[ref_chunk],
+                historical_hours=[40.0, 48.0],
+                avg_similarity=0.82,
+            )
+        ]
+        breakdown = [FakeBreakdownItem()]
+        effort = {
+            "optimistic": {"hours": 30},
+            "expected": {"hours": 40},
+            "pessimistic": {"hours": 60},
+        }
+        _, user_prompt = build_validation_prompt(breakdown, refs, effort)
+        assert "2 referencias" in user_prompt
+        assert "0.82" in user_prompt
+
+    def test_marks_no_historical_data(self) -> None:
+        refs = [FakeTaskSearchResult(historical_hours=[])]
+        breakdown = [FakeBreakdownItem()]
+        effort = {
+            "optimistic": {"hours": 30},
+            "expected": {"hours": 40},
+            "pessimistic": {"hours": 60},
+        }
+        _, user_prompt = build_validation_prompt(breakdown, refs, effort)
+        assert "Sin datos históricos" in user_prompt
+
+    def test_includes_effort_summary(self) -> None:
+        refs = [FakeTaskSearchResult()]
+        breakdown = [FakeBreakdownItem()]
+        effort = {
+            "optimistic": {"hours": 30},
+            "expected": {"hours": 40},
+            "pessimistic": {"hours": 60},
+        }
+        _, user_prompt = build_validation_prompt(breakdown, refs, effort)
+        assert "Optimista: 30h" in user_prompt
+        assert "Esperado: 40h" in user_prompt
+        assert "Pesimista: 60h" in user_prompt

@@ -83,6 +83,22 @@ def _variance_factor(chunks: list[ChunkLike]) -> tuple[float, float]:
     return cv, factor
 
 
+def _task_validation_factor(
+    task_search_results: list,
+) -> tuple[float, float]:
+    """Return (coverage_ratio, factor).
+
+    coverage_ratio = fraction of tasks that had at least one historical reference.
+    """
+    if not task_search_results:
+        return 0.0, 0.0
+    tasks_with_refs = sum(
+        1 for r in task_search_results if r.historical_hours
+    )
+    coverage = tasks_with_refs / len(task_search_results)
+    return coverage, coverage
+
+
 def _score_to_level(score: float) -> str:
     if score < 0.3:
         return "very_low"
@@ -98,18 +114,29 @@ def _score_to_level(score: float) -> str:
 def calculate_confidence(
     chunks: list[ChunkLike],
     query_technologies: list[str] | None = None,
+    task_search_results: list | None = None,
 ) -> ConfidenceResult:
     ref_factor = _references_factor(len(chunks))
     avg_sim, sim_factor = _similarity_factor(chunks)
     tech_match, tech_factor = _technology_factor(chunks, query_technologies)
     cv, var_factor = _variance_factor(chunks)
 
-    score = (
-        ref_factor * 0.35
-        + sim_factor * 0.30
-        + tech_factor * 0.20
-        + var_factor * 0.15
-    )
+    if task_search_results:
+        _task_coverage, task_factor = _task_validation_factor(task_search_results)
+        score = (
+            ref_factor * 0.25
+            + sim_factor * 0.25
+            + tech_factor * 0.15
+            + var_factor * 0.10
+            + task_factor * 0.25
+        )
+    else:
+        score = (
+            ref_factor * 0.35
+            + sim_factor * 0.30
+            + tech_factor * 0.20
+            + var_factor * 0.15
+        )
     score = round(score, 2)
     level = _score_to_level(score)
 
