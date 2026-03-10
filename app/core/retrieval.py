@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import time
-import uuid
 from datetime import UTC, datetime
 from decimal import Decimal
 
@@ -68,13 +67,7 @@ class RetrievalService:
             preprocessed.processed_text
         )
 
-        # 3. Set HNSW ef_search for this transaction
-        await self._db.execute(
-            text(f"SET LOCAL hnsw.ef_search = {self._settings.HNSW_EF_SEARCH}")
-        )
-
-        # 4. Build and execute vector search query
-        # Merge suggested chunk types from preprocessing with explicit filters
+        # 3. Build query parameters outside the transaction
         filters = request.filters
         chunk_types = None
         technologies = None
@@ -126,8 +119,13 @@ class RetrievalService:
             LIMIT :top_k
         """)
 
-        result = await self._db.execute(sql, params)
-        rows = result.fetchall()
+        # 4. Execute SET LOCAL + vector search in an explicit transaction
+        async with self._db.begin():
+            await self._db.execute(
+                text(f"SET LOCAL hnsw.ef_search = {self._settings.HNSW_EF_SEARCH}")
+            )
+            result = await self._db.execute(sql, params)
+            rows = result.fetchall()
 
         # 5. Re-rank with composite scoring
         all_costs = [row.total_cost for row in rows if row.total_cost is not None]
@@ -186,14 +184,10 @@ class RetrievalService:
                 avg_score=avg_score,
                 response_time_ms=elapsed_ms,
             )
-            self._db.add(search_log)
-            await self._db.commit()
+            async with self._db.begin():
+                self._db.add(search_log)
         except Exception:
             await logger.awarning("Failed to log search", exc_info=True)
-            try:
-                await self._db.rollback()
-            except Exception:
-                pass
 
         # 9. Build response
         result_items = [
