@@ -1,7 +1,10 @@
+import tiktoken
 import structlog
 from openai import APIError, AsyncOpenAI, AuthenticationError, RateLimitError
 
 logger = structlog.stdlib.get_logger()
+
+MAX_EMBEDDING_TOKENS = 8191
 
 
 class EmbeddingError(Exception):
@@ -15,11 +18,27 @@ class EmbeddingService:
         self._client = AsyncOpenAI(api_key=api_key, max_retries=3)
         self._model = model
         self._dimensions = dimensions
+        self._encoder = tiktoken.encoding_for_model(model)
+
+    def _truncate_to_token_limit(self, text: str) -> str:
+        """Truncate text to fit within the embedding model's token limit."""
+        tokens = self._encoder.encode(text)
+        if len(tokens) <= MAX_EMBEDDING_TOKENS:
+            return text
+        logger.warning(
+            "Truncating text exceeding embedding token limit",
+            original_tokens=len(tokens),
+            max_tokens=MAX_EMBEDDING_TOKENS,
+            text_preview=text[:100],
+        )
+        return self._encoder.decode(tokens[:MAX_EMBEDDING_TOKENS])
 
     async def generate_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for a batch of texts."""
         if not texts:
             return []
+
+        texts = [self._truncate_to_token_limit(t) for t in texts]
 
         try:
             response = await self._client.embeddings.create(

@@ -5,7 +5,7 @@ from datetime import date
 from typing import Literal
 
 import structlog
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 logger = structlog.stdlib.get_logger()
 
@@ -83,7 +83,7 @@ class DetailedFeatureInput(BaseModel):
 
 
 class ScopeBlockInput(BaseModel):
-    title: str
+    title: str = Field(validation_alias=AliasChoices("title", "name"))
     short_description: str
     long_description: str | None = None
     features: list[str] | None = None

@@ -7,6 +7,9 @@ from uuid import UUID
 from app.api.schemas.quote_input import ItemInput, QuoteInput, RoadmapPhaseInput, ScopeBlockInput
 from app.utils.text_processing import parse_duration_weeks
 
+# ~8000 tokens at ~3.5 chars/token ratio — safety net before embedding truncation
+MAX_CHUNK_CHARS = 28000
+
 
 @dataclass
 class ChunkData:
@@ -491,5 +494,10 @@ def generate_chunks(quote: QuoteInput, document_id: UUID) -> list[ChunkData]:
     team_chunk = _build_team_conditions_chunk(quote, document_id, total_budget)
     if team_chunk is not None:
         chunks.append(team_chunk)
+
+    # Truncate chunks that exceed the character safety limit
+    for chunk in chunks:
+        if len(chunk.content_text) > MAX_CHUNK_CHARS:
+            chunk.content_text = chunk.content_text[:MAX_CHUNK_CHARS]
 
     return chunks

@@ -38,7 +38,7 @@ class Settings(BaseSettings):
 
     # Search defaults
     DEFAULT_TOP_K: int = 10
-    DEFAULT_MIN_SIMILARITY: float = 0.6
+    DEFAULT_MIN_SIMILARITY: float = 0.3
     MAX_TOP_K: int = 50
     HNSW_EF_SEARCH: int = 100
 

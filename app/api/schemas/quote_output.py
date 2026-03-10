@@ -124,16 +124,16 @@ class QuoteOutput(BaseModel):
     project: ProjectOutput = Field(description="Informacion del proyecto")
     currency: str = Field(default="EUR", description="Moneda del presupuesto (ISO 4217)")
     scope_blocks: list[ScopeBlockOutput] = Field(
-        description="Bloques funcionales del proyecto (minimo 3)",
-        min_length=1,
+        description="Bloques funcionales del proyecto (minimo 4, incluyendo exploracion/diseno)",
+        min_length=4,
     )
     roadmap_phases: list[RoadmapPhaseOutput] = Field(
-        default_factory=list,
         description="Fases del roadmap del proyecto (minimo 3)",
+        min_length=3,
     )
     items: list[ItemOutput] = Field(
-        description="Tareas desglosadas del presupuesto (minimo 8)",
-        min_length=1,
+        description="Tareas desglosadas del presupuesto (minimo 10)",
+        min_length=10,
     )
     team_members: list[TeamMemberOutput] = Field(
         default_factory=list,

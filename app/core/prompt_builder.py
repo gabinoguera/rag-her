@@ -24,7 +24,14 @@ Sin texto adicional, sin markdown, sin explicaciones fuera del JSON.
 normaliza todo a horas (1 día = 8 horas).
 9. Cada bloque funcional en suggested_breakdown debe tener entre 3 y 8 tareas \
 granulares que desglosen el trabajo necesario. Los nombres de las tareas deben \
-ser distintos al nombre del bloque y describir acciones concretas."""
+ser distintos al nombre del bloque y describir acciones concretas.
+10. Las suggested_technologies deben formar un stack coherente y compatible. \
+No incluyas frameworks competidores (e.g., React y Vue, Django y Express). \
+Si el contexto incluye stack de frontend o backend, úsalos obligatoriamente. \
+Prioriza las tecnologías preferidas del contexto del proyecto. \
+Considera que muchos proyectos usan el mismo stack para frontend y backend \
+(e.g., Next.js full-stack, Django con templates) — esto es válido y preferible \
+cuando el proyecto lo permite."""
 
 RESPONSE_JSON_SCHEMA = json.dumps(
     {
@@ -211,11 +218,17 @@ def build_estimation_prompt(
         project_type = getattr(context, "project_type", None) or "No especificado"
         techs_pref = getattr(context, "technologies_preferred", None)
         techs_str = ", ".join(techs_pref) if techs_pref else "No especificadas"
+        frontend = getattr(context, "frontend_stack", None)
+        frontend_str = ", ".join(frontend) if frontend else "No especificado"
+        backend = getattr(context, "backend_stack", None)
+        backend_str = ", ".join(backend) if backend else "No especificado"
         team_size = getattr(context, "team_size", None) or "No especificado"
         complexity = getattr(context, "complexity", None) or "No especificada"
     else:
         project_type = "No especificado"
         techs_str = "No especificadas"
+        frontend_str = "No especificado"
+        backend_str = "No especificado"
         team_size = "No especificado"
         complexity = "No especificada"
 
@@ -223,6 +236,8 @@ def build_estimation_prompt(
         f"## Contexto del proyecto:\n"
         f"Tipo de proyecto: {project_type}\n"
         f"Tecnologías preferidas: {techs_str}\n"
+        f"Stack frontend REQUERIDO: {frontend_str}\n"
+        f"Stack backend REQUERIDO: {backend_str}\n"
         f"Tamaño del equipo: {team_size}\n"
         f"Complejidad percibida: {complexity}"
     )

@@ -10,6 +10,8 @@ from app.core.generation import GenerationError, GenerationService
 from app.core.pipeline import (
     EstimationPipeline,
     NoRelevantChunksError,
+    TaskSearchResult,
+    _build_references,
     _extract_hours_from_chunks,
 )
 from app.core.response_parser import LLMEstimationResponse, LLMValidationResponse
@@ -347,6 +349,90 @@ class TestExtractHoursFromChunks:
 
     def test_empty_chunks(self) -> None:
         assert _extract_hours_from_chunks([]) == []
+
+
+class TestBuildReferences:
+    def _make_chunk(
+        self,
+        project_title: str,
+        chunk_type: str = "scope_block",
+        similarity: float = 0.80,
+        quantity: int | None = None,
+        unit: str = "",
+    ) -> SearchResultItem:
+        meta = {}
+        if quantity is not None:
+            meta["quantity"] = quantity
+            meta["unit"] = unit
+        return SearchResultItem(
+            chunk_id=uuid.uuid4(),
+            chunk_type=chunk_type,
+            similarity_score=similarity,
+            final_score=similarity,
+            content_text=f"Contenido de {project_title}",
+            metadata=meta,
+            project_title=project_title,
+            source_document_id=uuid.uuid4(),
+            technologies=["Python"],
+            total_cost=1000.0,
+            currency="EUR",
+        )
+
+    def test_deduplicates_by_project_title(self) -> None:
+        chunks = [
+            self._make_chunk("Proyecto A", "project_overview", 0.90),
+            self._make_chunk("Proyecto A", "scope_block", 0.85),
+            self._make_chunk("Proyecto A", "line_item", 0.80),
+            self._make_chunk("Proyecto B", "scope_block", 0.75),
+        ]
+        refs = _build_references(chunks)
+        titles = [r.project_title for r in refs]
+        assert titles == ["Proyecto A", "Proyecto B"]
+        assert refs[0].similarity_score == 0.90  # kept highest
+
+    def test_max_projects_limit(self) -> None:
+        chunks = [
+            self._make_chunk(f"Proyecto {i}", similarity=0.90 - i * 0.01)
+            for i in range(10)
+        ]
+        refs = _build_references(chunks, max_projects=6)
+        assert len(refs) == 6
+
+    def test_includes_per_task_search_chunks(self) -> None:
+        global_chunks = [self._make_chunk("Proyecto Global", similarity=0.85)]
+        task_results = [
+            TaskSearchResult(
+                block_name="Dev",
+                task_name="Auth",
+                chunks=[self._make_chunk("Proyecto Task", similarity=0.70)],
+                historical_hours=[40.0],
+                avg_similarity=0.70,
+            ),
+        ]
+        refs = _build_references(global_chunks, task_search_results=task_results)
+        titles = {r.project_title for r in refs}
+        assert "Proyecto Global" in titles
+        assert "Proyecto Task" in titles
+
+    def test_hours_from_days(self) -> None:
+        chunks = [self._make_chunk("P1", quantity=5, unit="días")]
+        refs = _build_references(chunks)
+        assert refs[0].hours == 40
+
+    def test_hours_from_hours(self) -> None:
+        chunks = [self._make_chunk("P1", quantity=16, unit="horas")]
+        refs = _build_references(chunks)
+        assert refs[0].hours == 16
+
+    def test_hours_none_when_no_quantity(self) -> None:
+        chunks = [self._make_chunk("P1")]
+        refs = _build_references(chunks)
+        assert refs[0].hours is None
+
+    def test_not_included(self) -> None:
+        chunks = [self._make_chunk("P1")]
+        refs = _build_references(chunks, include=False)
+        assert refs == []
 
 
 class TestSkipValidation:

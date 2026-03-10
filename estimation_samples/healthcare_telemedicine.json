@@ -1,0 +1,430 @@
+{
+  "quote": {
+    "client": {
+      "name": "Dr. Ana Gutierrez",
+      "email": "ana.gutierrez@saludconnect.es",
+      "company": "SaludConnect Digital SL"
+    },
+    "project": {
+      "title": "Plataforma de Telemedicina SaludConnect",
+      "subtitle": "Sistema integral de consultas virtuales con videoconferencia, gestion clinica y portales para pacientes y medicos",
+      "proposal_date": "2026-02-20"
+    },
+    "dates": {
+      "issue_date": "2026-02-20",
+      "valid_until": "2026-03-22"
+    },
+    "currency": "EUR",
+    "discount": {
+      "type": "percentage",
+      "amount": 3
+    },
+    "objectives": [
+      {
+        "title": "Acceso remoto a consultas medicas",
+        "description": "Permitir a los pacientes realizar consultas medicas por videoconferencia desde cualquier dispositivo, reduciendo desplazamientos y tiempos de espera."
+      },
+      {
+        "title": "Digitalizacion de la gestion clinica",
+        "description": "Centralizar historiales clinicos, recetas electronicas y resultados de pruebas en un sistema seguro y accesible para los profesionales sanitarios."
+      },
+      {
+        "title": "Mejora de la experiencia del paciente",
+        "description": "Ofrecer un portal intuitivo donde los pacientes puedan gestionar sus citas, acceder a su historial y comunicarse con su equipo medico de forma segura."
+      },
+      {
+        "title": "Cumplimiento normativo sanitario",
+        "description": "Garantizar que la plataforma cumple con el RGPD, la normativa sanitaria vigente y los estandares de interoperabilidad HL7 FHIR para intercambio de datos clinicos."
+      }
+    ],
+    "scope_blocks": [
+      {
+        "title": "Consultas Virtuales y Videoconferencia",
+        "short_description": "Modulo de teleconsulta con videoconferencia en tiempo real, sala de espera virtual y grabacion de sesiones.",
+        "long_description": "Desarrollo del sistema de consultas virtuales que permite la comunicacion por video en alta definicion entre medico y paciente. Incluye sala de espera virtual con notificaciones, comparticion de pantalla para revision de pruebas, chat integrado durante la sesion, grabacion opcional de la consulta con consentimiento del paciente y soporte para consultas grupales con varios especialistas.",
+        "features": [
+          "Videoconferencia HD punto a punto con WebRTC",
+          "Sala de espera virtual con estimacion de tiempo",
+          "Chat en tiempo real durante la consulta",
+          "Comparticion de pantalla para revision de pruebas diagnosticas",
+          "Grabacion de sesiones con consentimiento informado",
+          "Soporte para interconsulta con multiples especialistas",
+          "Notificaciones push y por email antes de la cita"
+        ],
+        "technologies": [
+          "WebRTC",
+          "Vue.js",
+          "Socket.IO",
+          "Twilio TURN Server",
+          "MediaRecorder API"
+        ],
+        "detailed_features": [
+          {
+            "title": "Motor de videoconferencia medica",
+            "description": "Sistema de video peer-to-peer con WebRTC, fallback a servidor TURN para conexiones restrictivas, adaptacion automatica de calidad segun ancho de banda y modo de bajo consumo para dispositivos moviles."
+          },
+          {
+            "title": "Sala de espera virtual inteligente",
+            "description": "Gestion de cola de pacientes con estimacion dinamica de tiempo de espera, notificaciones automaticas al paciente cuando el medico esta disponible y prioridad configurable por tipo de consulta."
+          }
+        ]
+      },
+      {
+        "title": "Backend Clinico y API",
+        "short_description": "API REST segura para gestion de historiales clinicos, recetas electronicas, citas y datos sanitarios.",
+        "long_description": "Backend robusto desarrollado con Django REST Framework que gestiona toda la logica clinica de la plataforma. Incluye gestion de historiales clinicos electronicos con versionado, sistema de recetas electronicas integrado, motor de citas con disponibilidad en tiempo real, integracion con estandares HL7 FHIR para interoperabilidad con otros sistemas sanitarios y cifrado de datos sensibles en reposo y en transito.",
+        "features": [
+          "API REST documentada con OpenAPI y autenticacion JWT",
+          "Historial clinico electronico con versionado completo",
+          "Sistema de recetas electronicas con firma digital",
+          "Motor de citas con disponibilidad en tiempo real",
+          "Integracion HL7 FHIR para interoperabilidad",
+          "Cifrado AES-256 de datos sanitarios en reposo",
+          "Sistema de roles y permisos granular por especialidad"
+        ],
+        "technologies": [
+          "Django",
+          "Django REST Framework",
+          "PostgreSQL",
+          "Redis",
+          "Celery",
+          "Docker"
+        ],
+        "detailed_features": [
+          {
+            "title": "Historial clinico electronico",
+            "description": "Gestion completa del historial del paciente con versionado de documentos, adjuntos de pruebas diagnosticas, notas clinicas estructuradas y busqueda avanzada por diagnostico, fecha o especialista."
+          },
+          {
+            "title": "Motor de citas inteligente",
+            "description": "Sistema de reserva de citas con gestion de disponibilidad por medico y especialidad, duraciones configurables, recordatorios automaticos y deteccion de conflictos de horario."
+          }
+        ]
+      },
+      {
+        "title": "Portal del Paciente",
+        "short_description": "Interfaz web y movil para que los pacientes gestionen citas, consulten su historial y se comuniquen con su medico.",
+        "long_description": "Portal de autoservicio para pacientes con diseno responsive y accesible. Permite solicitar y gestionar citas, acceder al historial clinico y resultados de pruebas, descargar recetas electronicas, realizar pagos online de consultas y comunicarse con el equipo medico a traves de mensajeria segura. Disenado con un enfoque mobile-first para facilitar el acceso desde cualquier dispositivo.",
+        "features": [
+          "Dashboard personal con proximas citas y notificaciones",
+          "Gestion de citas con seleccion de especialista y horario",
+          "Acceso al historial clinico y resultados de pruebas",
+          "Descarga de recetas electronicas en PDF",
+          "Mensajeria segura con el equipo medico",
+          "Pasarela de pago para consultas privadas"
+        ],
+        "technologies": [
+          "Vue.js",
+          "Vuex",
+          "TailwindCSS",
+          "PWA",
+          "Stripe"
+        ],
+        "detailed_features": [
+          {
+            "title": "Dashboard del paciente",
+            "description": "Panel personalizado que muestra un resumen de proximas citas, mensajes pendientes, resultados recientes y recordatorios de medicacion, con navegacion intuitiva y accesible."
+          },
+          {
+            "title": "Mensajeria segura medico-paciente",
+            "description": "Sistema de mensajeria cifrada que permite al paciente enviar consultas no urgentes, adjuntar imagenes o documentos y recibir respuestas del equipo medico con notificaciones en tiempo real."
+          }
+        ]
+      },
+      {
+        "title": "Panel Medico y Administracion",
+        "short_description": "Dashboard para profesionales sanitarios con gestion de agenda, pacientes, informes clinicos y estadisticas.",
+        "long_description": "Panel de control avanzado para medicos y administradores de la clinica. Los medicos disponen de una vista unificada de su agenda diaria, acceso rapido a historiales de pacientes, herramientas para redactar informes clinicos y sistema de prescripcion electronica. Los administradores cuentan con gestion de usuarios, reportes de actividad, configuracion de especialidades y monitorizacion del rendimiento de la plataforma.",
+        "features": [
+          "Agenda medica con vista diaria, semanal y mensual",
+          "Acceso rapido al historial del paciente antes de la consulta",
+          "Editor de informes clinicos con plantillas por especialidad",
+          "Prescripcion electronica integrada con base de datos de medicamentos",
+          "Estadisticas de consultas, tiempos y satisfaccion del paciente",
+          "Gestion administrativa de usuarios, especialidades y tarifas"
+        ],
+        "technologies": [
+          "Vue.js",
+          "Vuetify",
+          "Chart.js",
+          "D3.js",
+          "FullCalendar"
+        ],
+        "detailed_features": [
+          {
+            "title": "Agenda medica inteligente",
+            "description": "Calendario interactivo con gestion de disponibilidad, tipos de consulta configurables, bloqueo de horarios y sincronizacion con calendarios externos via iCal."
+          },
+          {
+            "title": "Generador de informes clinicos",
+            "description": "Herramienta de redaccion de informes con plantillas predefinidas por especialidad, autocompletado de campos clinicos, firma digital y exportacion a PDF con formato oficial."
+          }
+        ]
+      }
+    ],
+    "roadmap_phases": [
+      {
+        "name": "Fase 1: Analisis y Diseno",
+        "duration": "3 semanas",
+        "description": "Levantamiento de requisitos clinicos, diseno de arquitectura conforme a normativa sanitaria, prototipos de alta fidelidad y validacion con profesionales sanitarios.",
+        "deliverables": [
+          "Documento de requisitos funcionales y clinicos",
+          "Arquitectura tecnica con diagrama de seguridad",
+          "Prototipos Figma validados con medicos y pacientes",
+          "Plan de cumplimiento RGPD y normativa sanitaria"
+        ],
+        "modules": [
+          "Consultas Virtuales y Videoconferencia",
+          "Backend Clinico y API",
+          "Portal del Paciente",
+          "Panel Medico y Administracion"
+        ]
+      },
+      {
+        "name": "Fase 2: Desarrollo Backend y Videoconferencia",
+        "duration": "6 semanas",
+        "description": "Desarrollo del backend clinico con Django, integracion HL7 FHIR, motor de citas y modulo de videoconferencia con WebRTC.",
+        "deliverables": [
+          "API REST clinica funcional con documentacion",
+          "Sistema de videoconferencia operativo",
+          "Motor de citas y disponibilidad",
+          "Historial clinico electronico y recetas",
+          "Tests unitarios y de integracion"
+        ],
+        "modules": [
+          "Backend Clinico y API",
+          "Consultas Virtuales y Videoconferencia"
+        ]
+      },
+      {
+        "name": "Fase 3: Desarrollo Frontend y Portales",
+        "duration": "5 semanas",
+        "description": "Desarrollo del portal del paciente y el panel medico con Vue.js, integracion completa con el backend y la videoconferencia.",
+        "deliverables": [
+          "Portal del paciente completo y responsive",
+          "Panel medico con agenda y herramientas clinicas",
+          "Panel de administracion",
+          "Integracion con pasarela de pago",
+          "Tests de componentes"
+        ],
+        "modules": [
+          "Portal del Paciente",
+          "Panel Medico y Administracion"
+        ]
+      },
+      {
+        "name": "Fase 4: Testing, Seguridad y Despliegue",
+        "duration": "3 semanas",
+        "description": "Auditoria de seguridad, testing integral, pruebas de conformidad normativa, optimizacion de rendimiento y despliegue en infraestructura sanitaria certificada.",
+        "deliverables": [
+          "Informe de auditoria de seguridad",
+          "Tests E2E y pruebas de carga",
+          "Certificacion de cumplimiento RGPD",
+          "Despliegue en produccion con monitorizacion",
+          "Documentacion tecnica y manual de usuario"
+        ],
+        "modules": [
+          "Consultas Virtuales y Videoconferencia",
+          "Backend Clinico y API",
+          "Portal del Paciente",
+          "Panel Medico y Administracion"
+        ]
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Analisis de requisitos clinicos y normativos",
+        "description": "Levantamiento de requisitos funcionales con profesionales sanitarios, analisis de normativa aplicable y definicion del plan de cumplimiento RGPD y HL7.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 580,
+        "discount_percent": 0,
+        "phase": "Fase 1: Analisis y Diseno"
+      },
+      {
+        "type": "service",
+        "name": "Diseno UX/UI y prototipos clinicos",
+        "description": "Diseno de interfaces especializadas para entornos sanitarios con criterios de accesibilidad WCAG 2.1 y validacion con medicos y pacientes.",
+        "quantity": 12,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 1: Analisis y Diseno"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo API REST clinica con Django",
+        "description": "Desarrollo del backend con Django REST Framework, modelado de datos clinicos, autenticacion JWT y sistema de roles por especialidad.",
+        "quantity": 22,
+        "unit": "dia",
+        "unit_price": 560,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo Backend y Videoconferencia"
+      },
+      {
+        "type": "service",
+        "name": "Modulo de videoconferencia WebRTC",
+        "description": "Implementacion del sistema de videollamadas con WebRTC, servidor TURN, grabacion de sesiones y sala de espera virtual.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 620,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo Backend y Videoconferencia"
+      },
+      {
+        "type": "service",
+        "name": "Historial clinico y recetas electronicas",
+        "description": "Desarrollo del historial clinico electronico con versionado, sistema de recetas con firma digital e integracion HL7 FHIR.",
+        "quantity": 14,
+        "unit": "dia",
+        "unit_price": 560,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo Backend y Videoconferencia"
+      },
+      {
+        "type": "service",
+        "name": "Motor de citas y disponibilidad",
+        "description": "Sistema de gestion de citas con disponibilidad en tiempo real, recordatorios automaticos y deteccion de conflictos de horario.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 520,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo Backend y Videoconferencia"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo portal del paciente",
+        "description": "Interfaz responsive con Vue.js para gestion de citas, acceso a historial, mensajeria segura y pagos online.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo Frontend y Portales"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo panel medico",
+        "description": "Panel de control para medicos con agenda interactiva, herramientas de prescripcion, editor de informes y estadisticas de consultas.",
+        "quantity": 16,
+        "unit": "dia",
+        "unit_price": 520,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo Frontend y Portales"
+      },
+      {
+        "type": "service",
+        "name": "Panel de administracion de la clinica",
+        "description": "Dashboard administrativo para gestion de usuarios, especialidades, tarifas, reportes de actividad y monitorizacion del sistema.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 480,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo Frontend y Portales"
+      },
+      {
+        "type": "service",
+        "name": "Auditoria de seguridad y cumplimiento",
+        "description": "Auditoria completa de seguridad, pruebas de penetracion, verificacion de cifrado de datos sanitarios y certificacion RGPD.",
+        "quantity": 8,
+        "unit": "dia",
+        "unit_price": 600,
+        "discount_percent": 0,
+        "phase": "Fase 4: Testing, Seguridad y Despliegue"
+      },
+      {
+        "type": "service",
+        "name": "Testing integral y QA",
+        "description": "Tests unitarios, de integracion y E2E. Pruebas de carga del sistema de videoconferencia y validacion de flujos clinicos completos.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 460,
+        "discount_percent": 0,
+        "phase": "Fase 4: Testing, Seguridad y Despliegue"
+      },
+      {
+        "type": "service",
+        "name": "Despliegue y configuracion DevOps",
+        "description": "Configuracion de infraestructura Docker en entorno sanitario certificado, CI/CD, monitorizacion, backups cifrados y despliegue en produccion.",
+        "quantity": 7,
+        "unit": "dia",
+        "unit_price": 540,
+        "discount_percent": 0,
+        "phase": "Fase 4: Testing, Seguridad y Despliegue"
+      }
+    ],
+    "team_members": [
+      {
+        "profile_type": "Tech Lead",
+        "description": "Lider tecnico con experiencia en plataformas sanitarias, responsable de la arquitectura, seguridad y decisiones tecnicas.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Backend Developer",
+        "description": "Desarrollador backend senior especializado en Django, PostgreSQL y sistemas de interoperabilidad sanitaria HL7 FHIR.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Frontend Developer",
+        "description": "Desarrollador frontend senior con experiencia en Vue.js, interfaces accesibles y aplicaciones en tiempo real con WebRTC.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "UX/UI Designer",
+        "description": "Disenador especializado en interfaces sanitarias, accesibilidad WCAG 2.1 y experiencia de usuario para pacientes y profesionales medicos.",
+        "quantity": 1,
+        "dedication": "part_time"
+      },
+      {
+        "profile_type": "QA Engineer",
+        "description": "Ingeniero de calidad con experiencia en testing de aplicaciones sanitarias, pruebas de seguridad y validacion de cumplimiento normativo.",
+        "quantity": 1,
+        "dedication": "part_time"
+      },
+      {
+        "profile_type": "Project Manager",
+        "description": "Gestor de proyecto con experiencia en proyectos de salud digital y conocimiento de regulaciones sanitarias.",
+        "quantity": 1,
+        "dedication": "part_time"
+      }
+    ],
+    "conditions": {
+      "payment_terms": [
+        "20% al inicio del proyecto",
+        "25% al completar Fase 2 (Backend y Videoconferencia)",
+        "30% al completar Fase 3 (Portales Frontend)",
+        "25% en la entrega final tras auditoria de seguridad"
+      ],
+      "included_services": [
+        "Reuniones semanales de seguimiento por videoconferencia",
+        "Documentacion tecnica y manual de usuario para medicos y pacientes",
+        "Formacion al equipo medico y administrativo (3 sesiones)",
+        "Soporte post-lanzamiento (4 semanas)",
+        "Acceso al repositorio de codigo fuente",
+        "Garantia de correccion de bugs (4 meses)",
+        "Asistencia en la obtencion de certificacion de cumplimiento normativo"
+      ],
+      "additional_services": [
+        {
+          "name": "Mantenimiento mensual y soporte tecnico 24/7",
+          "price": 2200
+        },
+        {
+          "name": "Modulo de telemonitorizacion de pacientes cronicos",
+          "price": 12000
+        },
+        {
+          "name": "App movil nativa para pacientes (iOS y Android)",
+          "price": 22000
+        }
+      ]
+    },
+    "notes": "El presupuesto incluye entornos de desarrollo y staging. No incluye licencias de produccion de servicios de terceros (Twilio, Stripe) que seran contratados directamente por el cliente. La plataforma se desarrollara conforme al Reglamento General de Proteccion de Datos (RGPD) y las directrices de proteccion de datos sanitarios. Se implementara interoperabilidad HL7 FHIR para facilitar la integracion con sistemas hospitalarios existentes. Precios sin IVA.",
+    "terms": "Propuesta valida por 30 dias naturales desde la fecha de emision. Los plazos estimados pueden variar en funcion de la disponibilidad del cliente para validaciones clinicas y feedback. Cualquier cambio de alcance sera evaluado y presupuestado por separado. El cliente se compromete a facilitar acceso a profesionales sanitarios para la fase de validacion de requisitos."
+  },
+  "source": "medical_partnerships",
+  "ingested_by": "laura.sanchez"
+}

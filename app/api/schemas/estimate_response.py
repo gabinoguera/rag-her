@@ -52,7 +52,7 @@ class ReferenceItem(BaseModel):
     project_title: str | None = None
     content_preview: str
     cost: float | None = None
-    days: int | None = None
+    hours: int | None = None
     currency: str | None = None
     technologies: list[str] | None = None
 

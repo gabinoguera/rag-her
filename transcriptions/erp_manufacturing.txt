@@ -1,0 +1,243 @@
+Transcripción de Reunión — Definición de Proyecto ERP de Manufactura
+Fecha: 18 de febrero de 2026
+Duración: 2 horas 05 minutos
+Lugar: Videollamada (Google Meet)
+Asistentes:
+
+Antonio Pérez — Arquitecto de Software & IA, Consultor técnico
+Richard Thompson — Director General, Precision Manufacturing Corp
+Karen Mitchell — Directora de Operaciones y Producción, Precision Manufacturing Corp
+David Chen — Director Financiero (CFO), Precision Manufacturing Corp
+Laura Mendoza — Responsable de TI y Sistemas, Precision Manufacturing Corp
+
+
+Inicio de la reunión
+Antonio: Buenos días a todos, gracias por conectaros. Como acordamos la semana pasada, el objetivo de hoy es definir con el mayor detalle posible los requisitos del nuevo sistema ERP para Precision Manufacturing. La idea es entender vuestros procesos actuales, los puntos de dolor, y hacia dónde queréis llevar la operación. Richard, si te parece, empezamos con un poco de contexto general de la empresa y qué os está motivando a dar este paso.
+
+Richard: Perfecto, Antonio. Mira, Precision Manufacturing lleva operando dieciocho años. Somos una empresa de manufactura discreta, fabricamos componentes de precisión para la industria automotriz y aeroespacial, principalmente piezas mecanizadas en CNC, conjuntos soldados y ensamblajes electromecánicos. Tenemos dos plantas de producción, una en Houston y otra en Detroit, con un total de cuatrocientos cincuenta empleados entre ambas. El año pasado facturamos sesenta y ocho millones de dólares y manejamos un catálogo activo de aproximadamente mil doscientos SKUs entre productos terminados, semielaborados y materias primas.
+
+Antonio: Entendido. ¿Y qué os ha llevado a buscar un ERP nuevo en este momento?
+
+Richard: Varios factores. Llevamos años trabajando con un sistema heredado que se desarrolló internamente hace unos doce años. Era una aplicación en Visual Basic con una base de datos SQL Server que en su momento funcionaba bien, pero se ha quedado completamente obsoleta. El desarrollador original ya no está en la empresa, la documentación es mínima, y cada vez que necesitamos un cambio o una mejora, es un calvario. Además, el sistema no cubre todas las áreas: la parte financiera la gestionamos con QuickBooks Enterprise, la planificación de producción se hace parcialmente en hojas de Excel, y el seguimiento de calidad es prácticamente manual con formularios en papel.
+
+Karen: Si me permites añadir, Richard, el problema más grave desde operaciones es la falta de visibilidad en tiempo real. Yo necesito saber ahora mismo cuántas piezas del componente X se han producido hoy, cuál es el rendimiento de la línea tres, cuánto material tenemos en el almacén de Houston para cumplir los pedidos de la semana que viene. Y para obtener esa información tengo que llamar a tres personas, esperar a que revisen sus hojas de cálculo, y consolidar datos que a veces no cuadran entre sí. Es un desastre operativo.
+
+Antonio: O sea que el principal driver es la integración de información y la visibilidad operativa.
+
+Richard: Exacto. Pero hay otro tema igual de importante: el cumplimiento normativo. Varios de nuestros clientes del sector aeroespacial nos exigen trazabilidad completa conforme a ISO 9001. Necesitamos poder rastrear cualquier pieza desde la materia prima hasta el producto terminado, saber de qué lote vino el aluminio, quién operó la máquina, qué inspección de calidad pasó. Con el sistema actual no podemos hacer eso de forma fiable y estamos perdiendo oportunidades de negocio por ello.
+
+David: Y desde el punto de vista financiero, necesitamos cumplir con GAAP de forma rigurosa. Además, nuestro consejo nos ha planteado que en un plazo de dos años deberíamos estar preparados para cumplir con los controles internos que exige SOX, porque estamos valorando una salida a bolsa o al menos una ronda de financiación importante. Eso implica pistas de auditoría completas, segregación de funciones, controles de acceso granulares, cierre contable formal, todo lo que un auditor externo esperaría encontrar.
+
+Antonio: Perfecto, eso me da un panorama muy claro de las motivaciones. Vamos a ir desgranando cada área funcional. Karen, empecemos contigo por la gestión de producción. ¿Cómo funcionan vuestros procesos de fabricación actualmente?
+
+Karen: Nuestra producción es manufactura discreta, no de proceso. Fabricamos piezas y conjuntos bajo pedido, aunque algunos componentes de alta rotación los fabricamos para stock. El flujo típico es: recibimos un pedido del cliente, ingeniería revisa la lista de materiales, si es un producto nuevo se crea la BOM, si ya existe se verifica que esté actualizada, luego se genera una orden de producción que pasa por varias estaciones de trabajo: corte, mecanizado CNC, soldadura si aplica, tratamiento superficial, ensamblaje, inspección de calidad, y finalmente empaquetado y envío.
+
+Antonio: ¿Las listas de materiales son complejas? ¿Cuántos niveles de profundidad tienen típicamente?
+
+Karen: Son bastante complejas, sí. Una BOM típica para un ensamblaje electromecánico puede tener cuatro o cinco niveles. El nivel superior es el producto terminado, luego tienes los subensamblajes, luego los componentes individuales, y finalmente las materias primas. Algunos productos comparten componentes intermedios, así que necesitamos que el sistema gestione BOMs multinivel con reutilización de componentes. Además, necesitamos control de revisiones: cuando ingeniería modifica una BOM, necesitamos mantener el historial de todas las versiones anteriores y saber exactamente qué versión se usó para fabricar cada lote. Las órdenes de cambio de ingeniería tienen que seguir un flujo de aprobación formal.
+
+Antonio: ¿Cuántas órdenes de producción gestionáis al mes aproximadamente?
+
+Karen: Entre las dos plantas, procesamos alrededor de seiscientas órdenes de producción al mes. Cada orden puede tener entre tres y quince operaciones dependiendo de la complejidad de la pieza. En total, la planta de Houston opera con veinticuatro centros de trabajo y la de Detroit con dieciocho. Cada centro de trabajo tiene su propia capacidad, sus turnos, sus calendarios de mantenimiento. La programación de todo esto en Excel es una pesadilla absoluta.
+
+Antonio: Entiendo perfectamente. Entonces necesitáis un módulo de gestión de producción con listas de materiales multinivel, control de revisiones, órdenes de cambio de ingeniería, gestión del ciclo de vida de órdenes de producción con sus diferentes estados, y programación de planta con restricciones de capacidad. ¿Qué hay del MRP?
+
+Karen: El MRP es crítico. Necesitamos un motor que tome como input los pedidos confirmados, los pronósticos de demanda que nos pasa el equipo comercial, los niveles de inventario actuales y los stocks de seguridad definidos, y que calcule automáticamente qué necesitamos comprar y qué necesitamos fabricar, cuándo y en qué cantidad. Actualmente hacemos ese cálculo de forma semi-manual y nos lleva dos días completos cada semana. Un buen motor MRP debería hacer eso en minutos.
+
+Antonio: ¿Y necesitáis planificación de capacidad finita? Es decir, que el sistema tenga en cuenta la capacidad real de cada centro de trabajo al programar.
+
+Karen: Absolutamente. No sirve de nada que el MRP diga que necesitamos fabricar quinientas piezas del componente Y la semana que viene si los tres tornos CNC están ocupados con otro pedido. El sistema tiene que considerar la disponibilidad real de máquinas y mano de obra, los turnos programados, las paradas de mantenimiento, y proponer un programa de producción factible. Si hay cuellos de botella, quiero que el sistema los identifique y me proponga alternativas: adelantar producción, subcontratar, reprogramar entregas al cliente.
+
+Antonio: Perfecto. ¿Y qué hay del seguimiento en planta? ¿Cómo queréis que los operarios reporten el avance de producción?
+
+Karen: Necesitamos terminales en planta, ya sea tablets industriales o PCs de taller, donde el operario pueda ver las órdenes asignadas a su centro de trabajo, reportar inicio y fin de cada operación, registrar la cantidad producida, la cantidad de piezas rechazadas o con desperdicios, y las mediciones de calidad que correspondan. Todo con lectura de código de barras para identificar la orden y el centro de trabajo rápidamente. Y quiero un panel OEE en tiempo real que me muestre la eficacia global de cada equipo: disponibilidad, rendimiento y calidad. Actualmente calculamos el OEE una vez al mes y de forma manual. Necesito verlo en tiempo real para poder reaccionar durante el turno.
+
+Antonio: Excelente. Eso es un módulo bastante robusto. Pasemos al inventario y cadena de suministro. Karen, ¿cómo gestionáis el inventario actualmente?
+
+Karen: Tenemos tres almacenes: el principal en Houston junto a la planta, otro en Detroit, y un tercero más pequeño que usamos como almacén de producto terminado listo para envío en Houston. En total manejamos unas tres mil quinientas referencias entre materias primas, componentes comprados, semielaborados y productos terminados. El problema principal es que nunca sabemos con certeza cuánto stock tenemos realmente. El sistema heredado tiene un registro, pero no refleja la realidad porque hay movimientos que no se registran a tiempo, devoluciones que se pierden, ajustes que se hacen en Excel y nunca se pasan al sistema.
+
+Antonio: ¿Hacéis inventario físico?
+
+Karen: Hacemos un inventario completo una vez al año, y la discrepancia suele ser del ocho al diez por ciento, lo cual es inaceptable. Necesitamos poder hacer conteos cíclicos continuos, clasificar los productos con el método ABC para concentrar los conteos en los artículos de mayor valor, y que el sistema nos genere automáticamente las listas de conteo.
+
+Antonio: ¿Y la gestión de lotes y trazabilidad?
+
+Karen: Es fundamental, especialmente para los clientes de aeroespacial. Cada lote de materia prima que entra tiene que registrarse con su certificado de calidad del proveedor, su número de lote de origen, fecha de recepción, resultados de inspección de entrada. Y esa información tiene que propagarse a lo largo de todo el proceso productivo. Si un cliente nos llama dentro de cinco años diciendo que una pieza falló, tenemos que poder rastrear en qué orden de producción se fabricó, con qué lote de materia prima, en qué máquina, quién la inspeccionó, y si hay otras piezas del mismo lote que puedan estar afectadas. Esto es requisito de ISO 9001 y para nosotros es no negociable.
+
+Antonio: Entendido, trazabilidad completa de extremo a extremo. ¿Y en cuanto a las adquisiciones? ¿Cómo es el proceso de compra actual?
+
+Karen: Trabajamos con unos ciento veinte proveedores activos, de los cuales unos treinta son proveedores críticos de materiales especiales como aleaciones de aluminio aeronáutico, aceros inoxidables certificados y componentes electrónicos. El proceso de compra actual es caótico: el jefe de almacén ve que falta material, me manda un correo, yo verifico si es una compra aprobada, le paso la solicitud a compras, compras pide cotización a dos o tres proveedores por email, compara manualmente, elige proveedor, genera la orden de compra en Word, la envía por email. Es todo manual y se pierden cosas constantemente.
+
+Antonio: Entonces necesitáis un flujo de trabajo de adquisiciones completo: solicitud de compra, aprobación con jerarquías configurables, solicitud de cotización a proveedores, comparación de ofertas, generación de orden de compra, seguimiento de entregas, recepción de mercancía con inspección, y conciliación tripartita entre orden de compra, recepción y factura del proveedor.
+
+Karen: Exactamente. Y además necesitamos un sistema de evaluación de proveedores. Quiero poder llevar un scorecard de cada proveedor con métricas como cumplimiento de plazo de entrega, porcentaje de rechazo de materiales recibidos, competitividad de precios, tiempos de respuesta a reclamaciones. Eso nos ayuda a tomar mejores decisiones de compra y a negociar condiciones.
+
+Antonio: ¿Los puntos de reorden los queréis automatizados?
+
+Karen: Sí. Cada referencia debería tener configurado un punto de reorden y un stock de seguridad. Cuando el inventario disponible baje del punto de reorden, el sistema debería generar automáticamente una solicitud de compra o al menos una alerta. Los stocks de seguridad deberían poder calcularse en base a datos históricos de consumo y variabilidad de los tiempos de entrega del proveedor.
+
+Antonio: Perfecto. David, pasemos al módulo financiero. ¿Qué necesitáis exactamente?
+
+David: Mira, Antonio, actualmente tenemos la contabilidad fragmentada. Usamos QuickBooks Enterprise para el libro mayor y la facturación, una hoja de cálculo enorme para la contabilidad de costos de producción, y otro sistema separado para la nómina. Lo que necesitamos es un módulo financiero integrado dentro del ERP que nos dé una visión unificada.
+
+Antonio: Empecemos por el libro mayor. ¿Qué estructura de plan de cuentas tenéis?
+
+David: Tenemos un plan de cuentas con alrededor de cuatrocientas cuentas, organizado según los estándares GAAP. Necesitamos un libro mayor de partida doble con la posibilidad de definir centros de costo y centros de beneficio. Tenemos ocho centros de costo principales: las dos plantas de producción, el almacén de Houston, el departamento de ingeniería, ventas, administración, TI, y dirección. Y queremos poder analizar la rentabilidad por línea de producto, por cliente y por planta. El sistema tiene que soportar reglas de asignación de costos indirectos, por ejemplo, distribuir los costos de electricidad entre los centros de trabajo en función de las horas máquina consumidas.
+
+Antonio: ¿Y la contabilidad de costos de producción?
+
+David: Eso es crucial para nosotros. Necesitamos mantener costos estándar para todos nuestros productos y componentes, con la capacidad de actualizarlos periódicamente. El sistema debería calcular automáticamente el costo acumulado de un producto terminado subiendo por toda la BOM: costo de materiales, costo de mano de obra directa basado en las horas reportadas en planta, y una asignación de gastos generales de fabricación basada en drivers de costo que nosotros definamos. Luego, al final del período, necesitamos análisis de variaciones: variación de precio de compra, variación de uso de materiales, variación de eficiencia de mano de obra, variación de gastos generales. Eso es lo que un auditor espera ver y lo que nuestro consejo necesita para tomar decisiones.
+
+Antonio: Respecto a cuentas por pagar, ¿cómo gestionáis actualmente los pagos a proveedores?
+
+David: Pagamos a la mayoría de proveedores a treinta días, algunos a cuarenta y cinco, y unos pocos proveedores críticos tienen condiciones especiales. Necesitamos un módulo de cuentas por pagar que programe automáticamente los pagos según las condiciones de cada proveedor, que detecte descuentos por pronto pago y nos avise cuando convenga aprovecharlos, y que genere las propuestas de pago que yo apruebo antes de la ejecución. También necesitamos gestionar anticipos a proveedores y retenciones.
+
+Antonio: ¿Y las cuentas por cobrar?
+
+David: Tenemos unos doscientos clientes activos. Las condiciones de cobro varían: algunos pagan contra entrega, la mayoría a treinta días, los clientes grandes del sector automotriz pagan a sesenta o incluso noventa días. Necesitamos un módulo de cuentas por cobrar con análisis de antigüedad de saldos, generación automática de cartas de cobro cuando una factura se vence, y la posibilidad de gestionar notas de crédito y devoluciones. También me gustaría tener un módulo de previsión de tesorería que, cruzando las cuentas por cobrar y por pagar, me diga cómo va a estar mi flujo de caja las próximas cuatro a ocho semanas.
+
+Antonio: ¿Conciliación bancaria?
+
+David: Imprescindible. Actualmente la hacemos manual en Excel y nos lleva dos días al mes. Necesitamos poder importar los extractos bancarios, ya sea mediante archivo OFX o mediante integración directa con el banco si es posible, y que el sistema haga un matching automático contra nuestros registros contables. Las partidas que no coincidan deberían quedar pendientes para revisión manual.
+
+Antonio: ¿Qué hay de activos fijos?
+
+David: Tenemos un parque de maquinaria valorado en unos veintidós millones de dólares: centros de mecanizado CNC, tornos, soldadoras robotizadas, equipos de medición, vehículos de planta. Necesitamos un registro de activos fijos con soporte para diferentes métodos de depreciación: línea recta, acelerada, unidades de producción. Cada activo con su vida útil, su valor residual, su ubicación, su centro de costo asignado. Y que el sistema calcule automáticamente la depreciación mensual y genere los asientos contables correspondientes.
+
+Antonio: ¿Y el cierre contable de período?
+
+David: Necesitamos un proceso de cierre de período guiado. Que el sistema tenga una checklist de tareas de cierre: verificar que todos los movimientos de inventario estén registrados, que todas las órdenes de producción cerradas tengan sus costos aplicados, que las provisiones estén generadas, que las conciliaciones bancarias estén completadas, que las amortizaciones estén calculadas. Y que no se pueda cerrar el período hasta que todas las verificaciones estén satisfechas. Esto es fundamental para la auditoría y para un eventual cumplimiento SOX.
+
+Antonio: Perfecto. Todo lo que describes es completamente alineado con los requisitos GAAP y prepara bien el camino para SOX. Ahora hablemos del portal de gestión y reportes. Laura, entiendo que tú llevarías la parte técnica de la implementación. ¿Qué necesitáis en cuanto a la interfaz de gestión?
+
+Laura: Necesitamos un portal web centralizado desde el que se acceda a todos los módulos del ERP. Lo más importante es que sea intuitivo. Nuestros usuarios no son gente técnica: operarios de planta, jefes de almacén, contables. La interfaz tiene que ser clara, con navegación lógica, formularios bien organizados y mensajes de error comprensibles. Nada de interfaces crípticas que requieran un manual de quinientas páginas.
+
+Antonio: ¿Qué roles de usuario necesitáis?
+
+Laura: Hemos identificado al menos seis roles principales: operario de planta que solo accede al módulo de reporte de producción, supervisor de producción que ve la programación y el OEE, gestor de almacén e inventario, comprador que gestiona proveedores y órdenes de compra, contable que accede al módulo financiero, y dirección que ve los dashboards ejecutivos. Cada rol debería poder configurarse con permisos granulares, incluso a nivel de campo. Por ejemplo, un supervisor puede ver el costo de la orden de producción pero no puede modificarlo, y un operario directamente no ve esa información.
+
+Antonio: Eso es lo que llamamos RBAC, control de acceso basado en roles, con seguridad a nivel de campo. Es uno de los requisitos que mencionaba David para el cumplimiento SOX. ¿Y los dashboards ejecutivos?
+
+Richard: Los dashboards son muy importantes para mí. Quiero entrar por la mañana al ERP y ver de un vistazo: producción del día versus objetivo, pedidos pendientes de entrega con su fecha comprometida y si vamos en tiempo o con retraso, nivel de inventario global con alertas de stock bajo en materiales críticos, OEE de cada planta, facturación del mes versus presupuesto, flujo de caja actual. Y quiero poder hacer drill-down desde cualquier indicador. Si veo que el OEE de la planta de Detroit está por debajo del objetivo, quiero hacer clic y ver qué centros de trabajo están fallando, y desde ahí bajar hasta la orden de producción concreta que está causando el problema.
+
+Antonio: Eso es lo que llamamos capacidad de desglose desde métricas resumidas hasta detalles de transacciones. ¿Qué KPIs específicos queréis monitorizar?
+
+Karen: Desde producción: OEE por centro de trabajo y por planta, cumplimiento del programa de producción, tasa de rechazo y scrap, tiempos de ciclo versus tiempos estándar, pedidos entregados a tiempo. Desde inventario: rotación de inventario, precisión de inventario, valor del stock por categoría, índice de desabastecimiento.
+
+David: Desde finanzas: margen bruto por producto y por línea de negocio, DSO que es el período medio de cobro, DPO que es el período medio de pago, EBITDA mensual, variación de costos reales versus estándar, flujo de caja operativo.
+
+Antonio: Muy bien. ¿Y necesitáis un constructor de reportes ad-hoc para que los usuarios creen sus propios informes?
+
+Richard: Sí, absolutamente. No podemos depender de TI cada vez que alguien necesite un informe diferente. Necesitamos una herramienta donde un usuario autorizado pueda seleccionar campos de diferentes tablas, aplicar filtros, elegir cómo presentar los datos, ya sea en tabla, gráfico de barras, gráfico de líneas, y guardar ese reporte para usarlo recurrentemente. Además, algunos reportes deberían poder programarse para que se generen automáticamente cada lunes a las siete de la mañana y se envíen por correo electrónico a un grupo de distribución.
+
+Antonio: Una herramienta de reportes ad-hoc con arrastrar y soltar campos, programación de generación y distribución por email. Entendido. ¿Queréis exportación a diferentes formatos?
+
+David: Excel es imprescindible, PDF para los informes formales, y CSV para cuando necesitemos importar datos en otras herramientas de análisis.
+
+Antonio: Hablemos de integraciones. Laura, ¿qué sistemas externos necesita el ERP conectar?
+
+Laura: Varios. Primero, la integración con nuestro sistema de nóminas que es ADP. No necesitamos replicar la nómina dentro del ERP, pero sí necesitamos recibir los datos de costo de mano de obra para la contabilidad de costos y el libro mayor. Segundo, integración bancaria para la conciliación que mencionó David. Tercero, tenemos un sistema MES en la planta de Houston, un Wonderware, que recoge datos directamente de las máquinas CNC. Si pudiésemos recibir esos datos en el ERP para alimentar el cálculo de OEE en tiempo real, sería fantástico.
+
+Antonio: La integración con el MES la podemos hacer mediante un broker de mensajes. De hecho, en la arquitectura que tengo en mente usaríamos Apache Kafka para la comunicación entre sistemas. Los eventos del MES se publicarían en un topic de Kafka y el ERP los consumiría en tiempo real. Para la comunicación asíncrona interna entre módulos del ERP usaríamos RabbitMQ.
+
+Laura: Eso suena bien. También necesitamos poder enviar y recibir EDI con algunos de nuestros clientes del sector automotriz. No muchos, pero los dos o tres clientes principales nos envían los pedidos por EDI y esperan recibir la confirmación y el aviso de envío también por EDI.
+
+Antonio: La integración EDI la podemos abordar, aunque yo lo plantearía como un servicio adicional por proveedor o cliente EDI, porque cada integración tiene sus particularidades. ¿Algo más en cuanto a integraciones?
+
+Laura: Sí, necesitamos integración con el servicio de correo electrónico para las notificaciones del sistema, alertas automáticas, distribución de reportes. Usamos Microsoft 365, así que debería integrarse con Outlook y Exchange Online. Y me gustaría que tuviese una API REST abierta y bien documentada para que en el futuro podamos desarrollar integraciones adicionales o conectar herramientas de BI como Power BI o Tableau.
+
+Antonio: Una API REST bien documentada es parte fundamental de la arquitectura que propondré. Hablemos ahora de los requisitos no funcionales. Richard, ¿qué esperáis en cuanto a rendimiento?
+
+Richard: El sistema tiene que ser rápido. No puede ser que un usuario tenga que esperar quince segundos cada vez que quiere consultar el stock de un artículo o abrir una orden de producción. Las consultas habituales deberían responder en menos de dos segundos. Y el motor MRP, que es el proceso más pesado, debería completar una ejecución completa, considerando nuestras mil doscientas referencias y las seiscientas órdenes mensuales, en un tiempo razonable. ¿Cuánto sería razonable?
+
+Antonio: Para un volumen como el vuestro, un motor MRP bien diseñado debería completar la ejecución en menos de cinco minutos. Es un proceso batch que típicamente se ejecuta una vez al día o bajo demanda, así que no necesita ser instantáneo, pero sí razonable.
+
+Richard: Cinco minutos me parece aceptable. ¿Y la disponibilidad?
+
+Laura: Necesitamos alta disponibilidad. Nuestras plantas operan en dos turnos, de seis de la mañana a diez de la noche, de lunes a viernes, y a veces sábados. El sistema tiene que estar disponible al menos durante esas horas sin excepción. Un tiempo de inactividad no planificado significaría que los operarios no pueden reportar producción, que almacén no puede registrar movimientos, que el planning se paraliza. Estamos hablando de un SLA del noventa y nueve punto cinco por ciento como mínimo.
+
+Antonio: Con la arquitectura que planteo, eso es alcanzable. Usaríamos despliegue en contenedores Docker con orquestación, base de datos PostgreSQL con réplica en standby para failover automático, y balanceo de carga para el frontend.
+
+Laura: ¿Y la seguridad?
+
+Antonio: La seguridad es multicapa. Autenticación mediante tokens JWT con integración con vuestro directorio activo de Microsoft 365, autorización basada en roles como hemos discutido, cifrado en tránsito con TLS y en reposo para datos sensibles, auditoría completa de todas las operaciones, con quién hizo qué, cuándo y desde dónde. Para cumplir con los requisitos que mencionaba David de cara a SOX, implementaremos segregación de funciones: por ejemplo, la persona que aprueba una orden de compra no puede ser la misma que registra la recepción de mercancía ni la que aprueba el pago.
+
+David: Exacto, eso es fundamental. La segregación de funciones tiene que ser configurable y el sistema tiene que impedir activamente que se violen esas reglas, no simplemente emitir una advertencia.
+
+Antonio: Completamente de acuerdo. ¿Qué hay de la migración de datos desde los sistemas actuales? Laura, ¿cuál es la situación?
+
+Laura: Es uno de los aspectos que más me preocupa. Tenemos datos en varios sitios. En el sistema heredado de Visual Basic tenemos el catálogo de productos, las BOMs, el histórico de órdenes de producción de los últimos doce años, los datos de proveedores y los movimientos de inventario. En QuickBooks tenemos todo el histórico financiero. En las hojas de Excel tenemos datos de planificación, costos estándar, y un montón de información complementaria. Necesitamos migrar todo eso al nuevo sistema de forma limpia.
+
+Antonio: La migración de datos es siempre una fase crítica. Lo que haremos es primero un inventario exhaustivo de todos los datos que tenéis, luego un mapeo de cómo esos datos se traducen al modelo de datos del nuevo sistema, una fase de limpieza y normalización porque seguro que hay inconsistencias acumuladas a lo largo de los años, y finalmente la carga al nuevo sistema con validaciones automatizadas. Para los datos históricos financieros, la práctica habitual es migrar los saldos de apertura y los movimientos de los últimos dos o tres ejercicios, no todo el histórico.
+
+David: Dos años mínimo de detalle transaccional. Y los saldos de apertura verificados y cuadrados con los estados financieros auditados.
+
+Antonio: Perfecto. ¿Hay algún requisito de localización o multiidioma?
+
+Richard: El sistema estará en inglés como idioma principal, pero necesitamos que la interfaz soporte español también, porque tenemos un porcentaje significativo de operarios hispanohablantes en la planta de Houston. Los reportes financieros y de gestión serán en inglés.
+
+Antonio: De acuerdo, soporte multiidioma al menos en inglés y español. Hablemos de la tecnología. Basándome en lo que hemos discutido, lo que yo recomendaría es lo siguiente: para el backend, Java 21 con Spring Boot, que es el estándar de la industria para aplicaciones empresariales de esta envergadura. Nos da robustez, rendimiento, un ecosistema maduro de librerías y un pool de talento muy amplio para mantenimiento futuro. Para el frontend, Angular con TypeScript, que es el framework más adecuado para aplicaciones empresariales complejas con muchos formularios, grillas de datos y flujos de trabajo. Usaríamos PrimeNG como librería de componentes UI y AG Grid para las tablas de datos avanzadas. Para la base de datos, PostgreSQL, que es una base de datos de nivel empresarial, open source, con un rendimiento excelente y capacidades avanzadas. Para la mensajería asíncrona, RabbitMQ para la comunicación interna entre módulos y Apache Kafka para la integración con sistemas externos como el MES. Y para los reportes, JasperReports que es la referencia en el mundo Java para generación de informes empresariales.
+
+Laura: ¿Por qué Java y no punto NET, que es lo que usamos internamente para otros sistemas?
+
+Antonio: Es una buena pregunta. Java con Spring Boot os da independencia de plataforma, un ecosistema de herramientas extraordinariamente maduro para ERP, y evita el vendor lock-in con Microsoft. Además, para la escala y complejidad de este proyecto, el ecosistema de Spring tiene módulos especializados para todo lo que necesitáis: Spring Security para la autenticación y autorización, Spring Batch para los procesos masivos como el MRP y la migración de datos, Spring Data para el acceso a datos, Spring Integration para las integraciones externas. Es la elección técnicamente más sólida para un ERP de esta envergadura.
+
+Richard: Me convence. Lo que me importa es que sea una tecnología con futuro, que encontremos gente para mantenerlo, y que no dependamos de un solo proveedor.
+
+Antonio: Java cumple esas tres condiciones ampliamente. Hablemos de plazos. Un proyecto de esta complejidad, con cuatro módulos principales y todas las funcionalidades que habéis descrito, requiere una planificación seria. Yo lo dividiría en cuatro fases. Primera fase de descubrimiento y arquitectura, unas cuatro semanas, donde documentamos en detalle todos los procesos de negocio, hacemos el análisis de brechas respecto a los sistemas actuales, diseñamos la arquitectura técnica, definimos la estrategia de migración y creamos los prototipos de interfaz. Segunda fase de desarrollo de los módulos de producción, MRP, inventario y cadena de suministro, que serían unas diez semanas. Tercera fase para el módulo financiero y el portal de gestión con reportes, unas ocho semanas. Y cuarta fase de integración, migración de datos, pruebas de aceptación de usuario, optimización de rendimiento, formación y puesta en producción, unas cinco semanas más.
+
+Richard: Entonces estamos hablando de unos seis meses y medio en total.
+
+Antonio: Aproximadamente veintisiete semanas, sí. Es un plazo realista para la complejidad que estamos manejando. Intentar acortarlo significativamente comprometería la calidad y el testing, que para un sistema ERP es inadmisible. Un error en el motor MRP o en la contabilidad de costos puede tener consecuencias graves.
+
+David: Totalmente de acuerdo. Prefiero que tardemos un mes más y que el sistema esté bien probado, especialmente la parte financiera. ¿Cuántas personas trabajarían en el proyecto?
+
+Antonio: El equipo que propondré incluirá un arquitecto de soluciones que sería yo supervisando la arquitectura general, dos desarrolladores backend senior especializados en Java y Spring Boot, dos desarrolladores frontend senior de Angular, un ingeniero de base de datos especialista en PostgreSQL, un ingeniero de calidad para las pruebas automatizadas y la coordinación de las pruebas de aceptación, y un gestor de proyecto a tiempo parcial.
+
+Richard: ¿Y por vuestra parte necesitaréis acceso a nuestra gente?
+
+Antonio: Sí, absolutamente. En la primera fase necesitaremos talleres presenciales con los key users de cada área: producción, almacén, compras, finanzas. Necesitaré un interlocutor técnico, que sería Laura, para las cuestiones de integración e infraestructura. Y durante las pruebas de aceptación, necesitaremos que los usuarios clave dediquen tiempo a probar el sistema con escenarios reales.
+
+Laura: ¿El despliegue sería en la nube o en nuestros servidores?
+
+Antonio: Yo recomendaría cloud, específicamente AWS o Azure. Os da elasticidad, alta disponibilidad con redundancia geográfica, backups automatizados, y no tenéis que preocuparos del hardware. Si por política corporativa necesitáis que los datos estén en servidores vuestros, podemos hacer un despliegue on-premise con contenedores Docker, pero perderíais muchas ventajas.
+
+Richard: Vamos a ir con cloud. No quiero invertir en infraestructura propia para esto. ¿Qué coste estimado estamos manejando?
+
+Antonio: Antes de darte un número, necesito trabajar el detalle. Lo que puedo decirte es que un proyecto de esta envergadura, con el equipo y los plazos que hemos discutido, se mueve en un rango que no es menor. Voy a preparar una propuesta detallada con el desglose por fase, por módulo, y con todas las partidas. Eso debería estar listo en unas dos semanas. ¿Os parece?
+
+Richard: Me parece bien. ¿Y en cuanto al mantenimiento posterior al lanzamiento?
+
+Antonio: Ofreceremos un período de hipersoporte de cuatro semanas tras la puesta en producción, donde el equipo estará disponible para resolver cualquier incidencia o ajuste urgente. Luego, un período de garantía de errores de seis meses. Y opcionalmente, un contrato de mantenimiento y soporte anual para evolución del sistema, soporte técnico y actualizaciones.
+
+David: ¿La propiedad intelectual del código sería nuestra?
+
+Antonio: Sí, el código fuente y toda la propiedad intelectual del desarrollo a medida sería completamente vuestra. Recibiríais todo el repositorio de código, la documentación técnica, los manuales de usuario y los procedimientos de despliegue. Cero dependencia.
+
+Richard: Perfecto. ¿Incluye formación para nuestro equipo?
+
+Antonio: Sí. Planificaríamos cuatro sesiones de formación de dos días cada una: una para el módulo de producción e inventario orientada a los supervisores y jefes de almacén, otra para el módulo financiero orientada al equipo de David, otra para el portal de gestión y reportes orientada a dirección, y otra técnica para Laura y su equipo sobre administración del sistema, configuración y mantenimiento.
+
+Karen: Una pregunta más, Antonio. ¿El sistema soportaría añadir módulos adicionales en el futuro? Estamos valorando incorporar un módulo de gestión de calidad más avanzado y posiblemente un módulo de gestión de proyectos de ingeniería.
+
+Antonio: La arquitectura modular que vamos a usar, basada en microservicios con Spring Boot, está diseñada precisamente para eso. Cada módulo es independiente pero integrado. Añadir un nuevo módulo en el futuro es cuestión de desarrollarlo siguiendo los mismos patrones y conectarlo al ecosistema existente a través de las APIs y la mensajería. No hay que tocar los módulos existentes.
+
+Richard: Excelente. Creo que hemos cubierto todo de forma muy completa. ¿Alguien tiene algo más?
+
+David: Solo recalcar que para mí la prioridad es que la parte financiera cumpla rigurosamente con GAAP y que estemos preparados para SOX. Cada transacción tiene que tener su pista de auditoría, cada dato financiero tiene que poder trazarse hasta su origen, y los controles de acceso tienen que ser robustos.
+
+Karen: Y para mí, la trazabilidad de producción conforme a ISO 9001 y un motor MRP que funcione de verdad. Si conseguimos eso, habremos dado un salto enorme respecto a donde estamos hoy.
+
+Laura: Desde TI, quiero una API bien documentada, un proceso de despliegue automatizado, y un sistema que sea mantenible a largo plazo. Nada de cajas negras.
+
+Antonio: Todo anotado. Me llevo un panorama muy completo. Voy a preparar la propuesta detallada con las especificaciones técnicas, la estimación por fases y módulos, y la propuesta económica. Os la tendré lista en dos semanas. Si mientras tanto se os ocurre algo que no hayamos cubierto hoy, no dudéis en escribirme un email y lo incorporo.
+
+Richard: Muchas gracias, Antonio. Ha sido una reunión muy productiva. Se nota que conoces bien el mundo de la manufactura y lo que implica un proyecto de esta magnitud.
+
+Antonio: Gracias a vosotros por la claridad con la que habéis expuesto las necesidades. Eso facilita enormemente mi trabajo. Hablamos en dos semanas. Un saludo a todos.
+
+Karen: Gracias, Antonio. Hasta pronto.
+
+David: Hasta luego.
+
+Laura: Gracias, que vaya bien. Hasta pronto.

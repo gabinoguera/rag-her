@@ -8,6 +8,8 @@ from app.api.schemas.search_request import VALID_CHUNK_TYPES
 class EstimationContext(BaseModel):
     project_type: str | None = None
     technologies_preferred: list[str] | None = None
+    frontend_stack: list[str] | None = None
+    backend_stack: list[str] | None = None
     team_size: int | None = Field(default=None, gt=0)
     complexity: str | None = Field(default=None, pattern="^(low|medium|high)$")
 

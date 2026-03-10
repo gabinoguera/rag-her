@@ -16,6 +16,14 @@ class QuoteGenerationContext(BaseModel):
         default_factory=list,
         description="Tecnologias preferidas para el proyecto",
     )
+    frontend_stack: list[str] = Field(
+        default_factory=list,
+        description="Stack de frontend preferido (e.g. ['React', 'TypeScript', 'TailwindCSS'])",
+    )
+    backend_stack: list[str] = Field(
+        default_factory=list,
+        description="Stack de backend preferido (e.g. ['Node.js', 'Express', 'PostgreSQL'])",
+    )
     team_size_hint: int | None = Field(
         default=None, description="Tamano aproximado del equipo", gt=0
     )

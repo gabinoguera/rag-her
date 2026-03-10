@@ -1,0 +1,450 @@
+{
+  "quote": {
+    "client": {
+      "name": "Richard Thompson",
+      "email": "richard.thompson@precisionmfg.com",
+      "company": "Precision Manufacturing Corp"
+    },
+    "project": {
+      "title": "Plataforma ERP para Operaciones de Manufactura",
+      "subtitle": "Sistema ERP integrado que abarca planificación de producción, gestión de inventarios, contabilidad financiera y reportes ejecutivos para manufactura discreta",
+      "proposal_date": "2026-02-20"
+    },
+    "dates": {
+      "issue_date": "2026-02-20",
+      "valid_until": "2026-03-22"
+    },
+    "currency": "USD",
+    "discount": {
+      "type": "percentage",
+      "amount": 3
+    },
+    "objectives": [
+      {
+        "title": "Visibilidad integral de la producción",
+        "description": "Proporcionar visibilidad en tiempo real de todo el ciclo de vida de producción, desde la adquisición de materias primas, pasando por el seguimiento de trabajo en proceso, hasta el inventario de productos terminados."
+      },
+      {
+        "title": "Gestión optimizada de inventario y cadena de suministro",
+        "description": "Reducir costos de almacenamiento y desabastecimientos mediante cálculos MRP basados en demanda, puntos de reorden automatizados y seguimiento del rendimiento de proveedores a lo largo de la cadena de suministro."
+      },
+      {
+        "title": "Consolidación financiera y cumplimiento normativo",
+        "description": "Centralizar las operaciones financieras incluyendo contabilidad de costos, cuentas por pagar y cobrar, y libro mayor con pistas de auditoría conformes con los requisitos GAAP y SOX."
+      },
+      {
+        "title": "Toma de decisiones basada en datos",
+        "description": "Empoderar a la dirección con paneles configurables, monitoreo de KPIs y capacidades avanzadas de reportes para apoyar la planificación estratégica e iniciativas de mejora continua."
+      }
+    ],
+    "scope_blocks": [
+      {
+        "title": "Gestión de Producción y MRP",
+        "short_description": "Planificación de producción, programación, gestión de lista de materiales y motor de planificación de requerimientos de materiales para manufactura discreta.",
+        "long_description": "Módulo integral de gestión de producción que cubre lista de materiales multinivel con control de revisiones, gestión del ciclo de vida de órdenes de producción, programación de planta con restricciones de capacidad, planificación de requerimientos de materiales con pronóstico de demanda, gestión de centros de trabajo, puntos de inspección de calidad y seguimiento del progreso de producción en tiempo real con métricas OEE.",
+        "features": [
+          "Lista de materiales multinivel con historial de revisiones y órdenes de cambio de ingeniería",
+          "Creación, programación y seguimiento de progreso de órdenes de producción",
+          "Motor MRP con pronóstico de demanda y cálculo de requerimientos netos",
+          "Programación de planta con planificación de capacidad finita",
+          "Gestión de centros de trabajo y máquinas con programación de mantenimiento",
+          "Puntos de inspección de calidad en etapas de producción configurables",
+          "Panel OEE con métricas de disponibilidad, rendimiento y calidad"
+        ],
+        "technologies": [
+          "Java 21",
+          "Spring Boot",
+          "PostgreSQL",
+          "RabbitMQ",
+          "Quartz Scheduler"
+        ],
+        "detailed_features": [
+          {
+            "title": "Motor de cálculo MRP",
+            "description": "Motor MRP basado en demanda que procesa pronósticos de ventas, pedidos existentes y niveles de stock de seguridad para generar órdenes de compra y producción planificadas con horizontes de planificación configurables y reglas de dimensionamiento de lotes."
+          },
+          {
+            "title": "Seguimiento de ejecución en planta",
+            "description": "Interfaz de seguimiento de producción en tiempo real para operadores de planta que permite reportar tiempos de inicio/parada de operaciones, cantidades producidas, conteo de desperdicios y mediciones de calidad con integración de lector de código de barras."
+          }
+        ]
+      },
+      {
+        "title": "Inventario y Cadena de Suministro",
+        "short_description": "Gestión de almacenes, control de inventario, flujos de trabajo de adquisiciones y gestión de relaciones con proveedores.",
+        "long_description": "Módulo completo de gestión de inventario con soporte multi-almacén, seguimiento de lotes y números de serie, cálculos automatizados de punto de reorden, flujos de trabajo de solicitud y aprobación de compras, gestión de proveedores con tarjetas de puntuación de rendimiento, procesamiento de recepción e inspección de mercancías, y conteo cíclico con clasificación ABC para optimizar la precisión del inventario.",
+        "features": [
+          "Inventario multi-almacén con gestión de zonas y ubicaciones de estantería",
+          "Seguimiento de lotes y trazabilidad de números de serie para cumplimiento normativo",
+          "Puntos de reorden automatizados con cálculos de stock de seguridad",
+          "Flujo de trabajo de solicitud de compra y conciliación tripartita",
+          "Gestión de proveedores con tarjetas de puntuación de rendimiento y seguimiento de tiempos de entrega",
+          "Recepción de mercancías, inspección y procesamiento de devoluciones"
+        ],
+        "technologies": [
+          "Java 21",
+          "Spring Boot",
+          "PostgreSQL",
+          "Apache POI",
+          "Barcode4J",
+          "Spring Batch"
+        ],
+        "detailed_features": [
+          {
+            "title": "Motor de valorización de inventario",
+            "description": "Soporte para múltiples métodos de costeo incluyendo costo estándar, promedio ponderado y FIFO con análisis automatizado de variaciones y procesamiento de revalorización al cierre de período."
+          },
+          {
+            "title": "Automatización de flujo de trabajo de adquisiciones",
+            "description": "Proceso de adquisiciones de extremo a extremo desde la solicitud hasta el pago, con jerarquías de aprobación configurables, gestión de solicitudes de cotización, generación de órdenes de compra y conciliación tripartita contra recepciones y facturas."
+          }
+        ]
+      },
+      {
+        "title": "Contabilidad y Finanzas",
+        "short_description": "Libro mayor, contabilidad de costos, cuentas por pagar y cobrar, y reportes financieros con cumplimiento GAAP.",
+        "long_description": "Módulo financiero integrado con libro mayor de partida doble, plan de cuentas configurable, contabilidad por centro de costo y centro de beneficio, cuentas por pagar con programación automática de pagos, cuentas por cobrar con análisis de antigüedad, conciliación bancaria, gestión de activos fijos con calendarios de depreciación, y flujos de trabajo de cierre de período con soporte de eliminación intercompañía.",
+        "features": [
+          "Libro mayor de partida doble con plan de cuentas configurable",
+          "Contabilidad por centro de costo y centro de beneficio con reglas de asignación",
+          "Cuentas por pagar con programación de pagos y descuentos por pronto pago",
+          "Cuentas por cobrar con análisis de antigüedad y cartas de cobro",
+          "Conciliación bancaria con reglas de coincidencia automatizadas",
+          "Registro de activos fijos con múltiples métodos de depreciación",
+          "Flujos de trabajo de cierre de período con verificaciones de validación"
+        ],
+        "technologies": [
+          "Java 21",
+          "Spring Boot",
+          "PostgreSQL",
+          "JasperReports",
+          "Spring Security",
+          "Apache Kafka"
+        ],
+        "detailed_features": [
+          {
+            "title": "Motor de contabilidad de costos",
+            "description": "Mantenimiento de costos estándar con cálculos de acumulación, recopilación de costos reales desde órdenes de producción, análisis de variación de precios de compra y asignación de gastos generales basada en generadores de costos por actividad configurables."
+          },
+          {
+            "title": "Automatización de cierre de período financiero",
+            "description": "Proceso guiado de cierre de período con generación automatizada de provisiones, conciliación intercompañía, verificaciones de validación de saldos y generación de balanza de comprobación, estado de resultados y balance general."
+          }
+        ]
+      },
+      {
+        "title": "Portal de Gestión y Reportes",
+        "short_description": "Paneles ejecutivos, monitoreo de KPIs, reportes configurables y portal con control de acceso basado en roles.",
+        "long_description": "Portal de gestión basado en web construido con Angular que proporciona acceso basado en roles a todos los módulos ERP, paneles ejecutivos con KPIs con desglose detallado, constructor de reportes ad-hoc con programación y distribución, capacidades de exportación de datos, administración de usuarios con permisos granulares, e interfaces de configuración del sistema para datos maestros, flujos de trabajo y reglas de negocio.",
+        "features": [
+          "Panel ejecutivo con KPIs de producción, inventario y finanzas",
+          "Capacidad de desglose desde métricas resumidas hasta detalles de transacciones",
+          "Constructor de reportes ad-hoc con selección de campos mediante arrastrar y soltar",
+          "Generación programada de reportes y distribución por correo electrónico",
+          "Control de acceso basado en roles con seguridad a nivel de campo",
+          "Administración del sistema para datos maestros y configuración"
+        ],
+        "technologies": [
+          "Angular 17",
+          "TypeScript",
+          "PrimeNG",
+          "Apache ECharts",
+          "AG Grid",
+          "RxJS"
+        ],
+        "detailed_features": [
+          {
+            "title": "Panel de monitoreo de KPIs",
+            "description": "Panel ejecutivo configurable que muestra KPIs en tiempo real para entrega a tiempo, rendimiento de producción, rotación de inventario, flujo de caja y margen bruto con alertas basadas en umbrales y análisis de tendencias."
+          },
+          {
+            "title": "Constructor de reportes ad-hoc",
+            "description": "Herramienta de reportes de autoservicio que permite a los usuarios seleccionar fuentes de datos, definir filtros, elegir tipos de visualización y programar entregas automatizadas, reduciendo la dependencia de TI para necesidades de reportes rutinarios."
+          }
+        ]
+      }
+    ],
+    "roadmap_phases": [
+      {
+        "name": "Fase 1: Descubrimiento y Arquitectura",
+        "duration": "4 semanas",
+        "description": "Análisis de procesos de negocio, evaluación de brechas respecto a los sistemas actuales, diseño de arquitectura técnica, estrategia de migración de datos y plan detallado del proyecto.",
+        "deliverables": [
+          "Documentación de procesos de negocio y análisis de brechas",
+          "Diseño de arquitectura técnica e infraestructura",
+          "Estrategia de migración de datos y documento de mapeo",
+          "Wireframes UI/UX y prototipos de navegación",
+          "Plan detallado del proyecto con hitos y registro de riesgos"
+        ],
+        "modules": [
+          "Gestión de Producción y MRP",
+          "Inventario y Cadena de Suministro",
+          "Contabilidad y Finanzas",
+          "Portal de Gestión y Reportes"
+        ]
+      },
+      {
+        "name": "Fase 2: Desarrollo de Módulos Principales",
+        "duration": "10 semanas",
+        "description": "Desarrollo de gestión de producción, motor MRP, control de inventario y módulos de cadena de suministro con APIs backend y capa de base de datos.",
+        "deliverables": [
+          "Módulo de gestión de producción con BOM y MRP",
+          "Módulo de gestión de inventario y almacenes",
+          "Flujos de trabajo de adquisiciones y gestión de proveedores",
+          "APIs REST backend con documentación completa",
+          "Pruebas unitarias y pruebas de integración con 80% de cobertura"
+        ],
+        "modules": [
+          "Gestión de Producción y MRP",
+          "Inventario y Cadena de Suministro"
+        ]
+      },
+      {
+        "name": "Fase 3: Desarrollo de Finanzas y Portal",
+        "duration": "8 semanas",
+        "description": "Desarrollo del módulo de contabilidad y finanzas, portal de gestión con paneles, motor de reportes y control de acceso basado en roles.",
+        "deliverables": [
+          "Módulo de libro mayor y contabilidad de costos",
+          "Módulos de cuentas por pagar/cobrar con procesamiento de pagos",
+          "Portal de gestión con paneles ejecutivos",
+          "Constructor de reportes y distribución programada",
+          "Pruebas de integración entre todos los módulos"
+        ],
+        "modules": [
+          "Contabilidad y Finanzas",
+          "Portal de Gestión y Reportes"
+        ]
+      },
+      {
+        "name": "Fase 4: Integración, Migración y Lanzamiento",
+        "duration": "5 semanas",
+        "description": "Pruebas de integración del sistema, ejecución de migración de datos, pruebas de aceptación de usuario, optimización de rendimiento, capacitación y despliegue a producción.",
+        "deliverables": [
+          "Scripts de migración de datos e informes de validación",
+          "Resultados de pruebas de integración del sistema",
+          "Aprobación de pruebas de aceptación de usuario",
+          "Informe de benchmark de rendimiento",
+          "Despliegue a producción y soporte de puesta en marcha",
+          "Materiales de capacitación y sesiones de formación"
+        ],
+        "modules": [
+          "Gestión de Producción y MRP",
+          "Inventario y Cadena de Suministro",
+          "Contabilidad y Finanzas",
+          "Portal de Gestión y Reportes"
+        ]
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Análisis de procesos de negocio y evaluación de brechas",
+        "description": "Talleres presenciales para documentar los procesos de manufactura actuales, identificar brechas y definir los requisitos funcionales para todos los módulos ERP.",
+        "quantity": 12,
+        "unit": "dia",
+        "unit_price": 680,
+        "discount_percent": 0,
+        "phase": "Fase 1: Descubrimiento y Arquitectura"
+      },
+      {
+        "type": "service",
+        "name": "Arquitectura técnica y diseño UX",
+        "description": "Diseño de arquitectura del sistema, validación del stack tecnológico, definición del modelo de datos, dimensionamiento de infraestructura y wireframes de UI de alta fidelidad.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 640,
+        "discount_percent": 0,
+        "phase": "Fase 1: Descubrimiento y Arquitectura"
+      },
+      {
+        "type": "service",
+        "name": "Módulo de gestión de producción y BOM",
+        "description": "Desarrollo de gestión de lista de materiales, ciclo de vida de órdenes de producción, programación de centros de trabajo e interfaces de seguimiento en planta.",
+        "quantity": 25,
+        "unit": "dia",
+        "unit_price": 650,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo de Módulos Principales"
+      },
+      {
+        "type": "service",
+        "name": "Motor MRP y planificación de capacidad",
+        "description": "Implementación del motor de cálculo MRP con integración de pronóstico de demanda, cómputo de requerimientos netos y programación de capacidad finita.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 720,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo de Módulos Principales"
+      },
+      {
+        "type": "service",
+        "name": "Gestión de inventario y almacenes",
+        "description": "Inventario multi-almacén con seguimiento de lotes, gestión de ubicaciones, conteo cíclico, procesamiento de recepción de mercancías y cálculos automatizados de reorden.",
+        "quantity": 20,
+        "unit": "dia",
+        "unit_price": 620,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo de Módulos Principales"
+      },
+      {
+        "type": "service",
+        "name": "Adquisiciones y gestión de proveedores",
+        "description": "Flujos de trabajo de solicitud de compra, gestión de solicitudes de cotización, procesamiento de órdenes de compra, conciliación tripartita y tarjetas de puntuación de rendimiento de proveedores.",
+        "quantity": 16,
+        "unit": "dia",
+        "unit_price": 600,
+        "discount_percent": 0,
+        "phase": "Fase 2: Desarrollo de Módulos Principales"
+      },
+      {
+        "type": "service",
+        "name": "Libro mayor y contabilidad de costos",
+        "description": "Libro mayor de partida doble con plan de cuentas configurable, contabilidad por centro de costo, acumulación de costos estándar y módulos de análisis de variaciones.",
+        "quantity": 22,
+        "unit": "dia",
+        "unit_price": 660,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo de Finanzas y Portal"
+      },
+      {
+        "type": "service",
+        "name": "Cuentas por pagar/cobrar y operaciones financieras",
+        "description": "Cuentas por pagar con programación de pagos, cuentas por cobrar con antigüedad y cobro, conciliación bancaria y gestión de activos fijos.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 620,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo de Finanzas y Portal"
+      },
+      {
+        "type": "service",
+        "name": "Portal de gestión y paneles",
+        "description": "Portal Angular con navegación basada en roles, paneles ejecutivos de KPIs, analítica con desglose detallado e interfaces de administración del sistema.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 580,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo de Finanzas y Portal"
+      },
+      {
+        "type": "service",
+        "name": "Constructor de reportes y motor de distribución",
+        "description": "Diseñador de reportes ad-hoc con campos de arrastrar y soltar, integración con JasperReports, generación programada y distribución por correo electrónico.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 560,
+        "discount_percent": 0,
+        "phase": "Fase 3: Desarrollo de Finanzas y Portal"
+      },
+      {
+        "type": "service",
+        "name": "Migración de datos e integración de sistemas",
+        "description": "Desarrollo de pipeline ETL para migración de datos heredados, limpieza de datos, scripts de validación y pruebas de integración entre todos los módulos.",
+        "quantity": 20,
+        "unit": "dia",
+        "unit_price": 640,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integración, Migración y Lanzamiento"
+      },
+      {
+        "type": "service",
+        "name": "UAT, pruebas de rendimiento y capacitación",
+        "description": "Coordinación de pruebas de aceptación de usuario, benchmarking de rendimiento bajo carga, impartición de sesiones de capacitación y documentación de usuario.",
+        "quantity": 12,
+        "unit": "dia",
+        "unit_price": 540,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integración, Migración y Lanzamiento"
+      },
+      {
+        "type": "service",
+        "name": "Despliegue a producción y soporte de puesta en marcha",
+        "description": "Aprovisionamiento de infraestructura, despliegue a producción, ejecución del plan de corte a producción y dos semanas de soporte presencial de hipersoporte.",
+        "quantity": 12,
+        "unit": "dia",
+        "unit_price": 600,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integración, Migración y Lanzamiento"
+      }
+    ],
+    "team_members": [
+      {
+        "profile_type": "Arquitecto de Soluciones",
+        "description": "Arquitecto senior con experiencia en sistemas ERP empresariales, dominio de manufactura y ecosistema Java/Spring Boot.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Desarrollador Backend",
+        "description": "Desarrollador Java senior con experiencia en Spring Boot y en desarrollo de módulos ERP y lógica de negocio compleja.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Desarrollador Frontend",
+        "description": "Desarrollador Angular senior con experiencia en desarrollo de portales empresariales, grillas de datos y flujos de trabajo de formularios complejos.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Ingeniero de Base de Datos",
+        "description": "Especialista en PostgreSQL con experiencia en modelado de datos para manufactura, scripts de migración y optimización de rendimiento de consultas.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Ingeniero de QA",
+        "description": "Ingeniero de calidad con experiencia en pruebas de ERP, suites de regresión automatizadas y coordinación de pruebas de aceptación de usuario.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Gerente de Proyecto",
+        "description": "Gerente de proyecto con experiencia en implementaciones ERP a gran escala y conocimiento de la industria manufacturera.",
+        "quantity": 1,
+        "dedication": "part_time"
+      }
+    ],
+    "conditions": {
+      "payment_terms": [
+        "15% a la firma del contrato",
+        "20% al completar la Fase 1 (Descubrimiento y Arquitectura)",
+        "25% al completar la Fase 2 (Desarrollo de Módulos Principales)",
+        "25% al completar la Fase 3 (Desarrollo de Finanzas y Portal)",
+        "15% a la entrega final, puesta en marcha y aprobación de aceptación"
+      ],
+      "included_services": [
+        "Reuniones semanales de seguimiento e informes de progreso",
+        "Documentación técnica y referencia de APIs",
+        "Manuales de usuario para cada módulo ERP",
+        "Sesiones de capacitación presencial (4 sesiones, 2 días cada una)",
+        "Soporte de hipersoporte post puesta en marcha (4 semanas)",
+        "Período de garantía de errores (6 meses)",
+        "Código fuente y transferencia completa de propiedad intelectual",
+        "Migración de datos desde sistemas heredados"
+      ],
+      "additional_services": [
+        {
+          "name": "Contrato anual de mantenimiento y soporte",
+          "price": 18000
+        },
+        {
+          "name": "Integración de hardware de código de barras y RFID",
+          "price": 9500
+        },
+        {
+          "name": "Integración EDI con proveedores clave (por proveedor)",
+          "price": 6000
+        },
+        {
+          "name": "Módulo personalizado de BI con analítica predictiva",
+          "price": 22000
+        }
+      ]
+    },
+    "notes": "Todos los precios están en USD y no incluyen impuestos aplicables. La estimación asume la migración desde un único sistema heredado; sistemas fuente adicionales requerirán un alcance por separado. Los costos de licencias de terceros para infraestructura de producción (servidor de aplicaciones, servidor de base de datos, broker de mensajería) no están incluidos y deben ser aprovisionados por el cliente. El sistema será diseñado para cumplir con los estándares GAAP y soportar futuros requisitos de auditoría SOX. Se han considerado estándares específicos de manufactura como los requisitos de trazabilidad ISO 9001 en los módulos de inventario y producción.",
+    "terms": "Esta propuesta es válida por 30 días calendario desde la fecha de emisión. Las estimaciones de plazos asumen disponibilidad del cliente para talleres, revisiones y UAT dentro de los 5 días hábiles de cada hito programado. Los cambios de alcance serán gestionados mediante un proceso formal de solicitud de cambio y cotizados por separado. Todos los entregables están sujetos a criterios de aceptación definidos durante la fase de Descubrimiento. El alcance de migración de datos cubre únicamente datos estructurados del sistema heredado principal; documentos no estructurados y archivos históricos están excluidos a menos que se acuerde explícitamente."
+  },
+  "source": "manufacturing_expo",
+  "ingested_by": "jennifer.harris"
+}

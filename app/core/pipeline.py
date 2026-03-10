@@ -225,7 +225,11 @@ class EstimationPipeline:
         )
 
         # 7. Build references
-        references = _build_references(chunks, options.include_references)
+        references = _build_references(
+            chunks,
+            options.include_references,
+            task_search_results=task_search_results or None,
+        )
 
         # 8. Build response
         elapsed_ms = int((time.monotonic() - start_time) * 1000)
@@ -436,23 +440,38 @@ def _build_search_request(request: EstimateRequest) -> SearchRequest:
 
 
 def _build_references(
-    chunks: list[SearchResultItem], include: bool = True
+    chunks: list[SearchResultItem],
+    include: bool = True,
+    task_search_results: list[TaskSearchResult] | None = None,
+    max_projects: int = 6,
 ) -> list[ReferenceItem]:
     if not include:
         return []
-    refs = []
-    for c in chunks:
-        meta = c.metadata or {}
-        days = None
-        quantity = meta.get("quantity")
-        unit = meta.get("unit", "")
-        if quantity is not None:
-            if "día" in str(unit).lower() or "day" in str(unit).lower():
-                try:
-                    days = int(float(str(quantity)))
-                except (ValueError, TypeError):
-                    pass
 
+    # Collect all chunks from global + per-task searches
+    all_chunks = list(chunks)
+    if task_search_results:
+        for tsr in task_search_results:
+            all_chunks.extend(tsr.chunks)
+
+    # Deduplicate by project: keep the chunk with the highest similarity_score per project
+    best_by_project: dict[str, SearchResultItem] = {}
+    for c in all_chunks:
+        key = c.project_title or str(c.source_document_id)
+        existing = best_by_project.get(key)
+        if existing is None or c.similarity_score > existing.similarity_score:
+            best_by_project[key] = c
+
+    # Sort by similarity descending and limit
+    sorted_chunks = sorted(
+        best_by_project.values(),
+        key=lambda c: c.similarity_score,
+        reverse=True,
+    )[:max_projects]
+
+    refs = []
+    for c in sorted_chunks:
+        hours = _hours_from_metadata(c.metadata)
         refs.append(
             ReferenceItem(
                 chunk_id=c.chunk_id,
@@ -461,12 +480,32 @@ def _build_references(
                 project_title=c.project_title,
                 content_preview=(c.content_text or "")[:200],
                 cost=c.total_cost,
-                days=days,
+                hours=hours,
                 currency=c.currency,
                 technologies=c.technologies,
             )
         )
     return refs
+
+
+def _hours_from_metadata(meta: dict | None) -> int | None:
+    """Convert chunk metadata quantity to hours, normalizing days to hours."""
+    if not meta:
+        return None
+    quantity = meta.get("quantity")
+    if quantity is None:
+        return None
+    try:
+        qty = float(str(quantity))
+    except (ValueError, TypeError):
+        return None
+    unit = str(meta.get("unit", "")).lower()
+    if "hora" in unit or "hour" in unit:
+        return int(qty)
+    elif "día" in unit or "dia" in unit or "day" in unit:
+        return int(qty * 8)
+    else:
+        return int(qty * 8)
 
 
 def _to_dict(obj: Any) -> dict:

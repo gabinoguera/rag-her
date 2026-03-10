@@ -76,6 +76,9 @@ class QuoteGenerationPipeline:
             analysis_time_ms=analysis_time_ms,
         )
 
+        # Post-analysis validation (no LLM)
+        analysis = self._validate_and_enrich_analysis(analysis)
+
         # Step 2: RAG search with generated queries
         step2_start = time.monotonic()
         rag_chunks, rag_queries_executed = await self._retrieve_context(analysis)
@@ -137,19 +140,31 @@ class QuoteGenerationPipeline:
     async def _retrieve_context(
         self, analysis: TranscriptionAnalysis
     ) -> tuple[list[SearchResultItem], int]:
-        """Execute multiple RAG searches using the analysis search_queries.
+        """Execute multiple RAG searches using global + per-module queries.
 
         Returns (deduplicated_chunks, queries_executed).
         """
-        queries = analysis.search_queries
-        if not queries:
+        # Global queries from analysis
+        global_queries = analysis.search_queries or []
+        tasks = [
+            self._search_single_query(query)
+            for query in global_queries
+        ]
+
+        # Per-module queries filtered to scope_block and line_item chunks
+        module_chunk_types = ["scope_block", "line_item"]
+        for mod in analysis.functional_modules:
+            if mod.search_query:
+                tasks.append(
+                    self._search_single_query(
+                        mod.search_query, chunk_types=module_chunk_types
+                    )
+                )
+
+        if not tasks:
             return [], 0
 
         # Execute all queries concurrently
-        tasks = [
-            self._search_single_query(query)
-            for query in queries
-        ]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Collect and deduplicate by chunk_id
@@ -170,19 +185,81 @@ class QuoteGenerationPipeline:
                     seen_chunk_ids.add(chunk.chunk_id)
                     all_chunks.append(chunk)
 
-        # Sort by final_score descending and take top 15
+        # Sort by final_score descending and take top 20
         all_chunks.sort(key=lambda c: c.final_score, reverse=True)
-        return all_chunks[:15], queries_executed
+        return all_chunks[:20], queries_executed
 
-    async def _search_single_query(self, query: str) -> list[SearchResultItem]:
-        """Execute a single RAG search query."""
+    async def _search_single_query(
+        self,
+        query: str,
+        chunk_types: list[str] | None = None,
+    ) -> list[SearchResultItem]:
+        """Execute a single RAG search query with optional chunk_type filtering."""
+        from app.api.schemas.search_request import SearchFilters
+
+        filters = SearchFilters(chunk_types=chunk_types) if chunk_types else None
         search_request = SearchRequest(
             query=query,
+            filters=filters,
             top_k=10,
             min_similarity=0.5,
         )
         response = await self._retrieval.search(search_request)
         return response.results
+
+    @staticmethod
+    def _validate_and_enrich_analysis(
+        analysis: TranscriptionAnalysis,
+    ) -> TranscriptionAnalysis:
+        """Programmatic post-analysis validation and enrichment (no LLM).
+
+        Fixes common omissions and logs warnings for issues that need attention.
+        """
+        updates: dict[str, Any] = {}
+
+        # If >1 user_type and no auth in cross_cutting_concerns, add it
+        user_type_count = len(analysis.user_types or [])
+        cross_cutting = list(analysis.cross_cutting_concerns or [])
+        if user_type_count > 1:
+            has_auth = any(
+                "autenticaci" in c.lower() or "auth" in c.lower()
+                for c in cross_cutting
+            )
+            if not has_auth:
+                cross_cutting.append("Autenticación y autorización")
+                updates["cross_cutting_concerns"] = cross_cutting
+                logger.warning(
+                    "Added missing auth to cross_cutting_concerns",
+                    user_type_count=user_type_count,
+                )
+
+        # Warn if no exploration/design module
+        module_titles_lower = [
+            m.title.lower() for m in analysis.functional_modules
+        ]
+        has_exploration = any(
+            "exploraci" in t or "diseño" in t or "diseno" in t or "definici" in t
+            for t in module_titles_lower
+        )
+        if not has_exploration:
+            logger.warning(
+                "Analysis missing exploration/design module",
+                project=analysis.project_title,
+            )
+
+        # Warn if any module has 0 features
+        for mod in analysis.functional_modules:
+            if not mod.features:
+                logger.warning(
+                    "Module has 0 features",
+                    module=mod.title,
+                    project=analysis.project_title,
+                )
+
+        if updates:
+            analysis = analysis.model_copy(update=updates)
+
+        return analysis
 
     @staticmethod
     def _enrich_quote(

@@ -1,0 +1,423 @@
+{
+  "quote": {
+    "client": {
+      "name": "Isabel Torres",
+      "email": "isabel.torres@translogistica.com",
+      "company": "TransLogistica Iberia SA"
+    },
+    "project": {
+      "title": "Plataforma de Gestion de Flotas y Logistica",
+      "subtitle": "Sistema integral de tracking de vehiculos en tiempo real, gestion de rutas, entregas y panel de control operativo con integracion IoT",
+      "proposal_date": "2026-03-01"
+    },
+    "dates": {
+      "issue_date": "2026-03-01",
+      "valid_until": "2026-03-31"
+    },
+    "currency": "EUR",
+    "discount": {
+      "type": "fixed",
+      "amount": 2500
+    },
+    "objectives": [
+      {
+        "title": "Visibilidad en tiempo real de la flota",
+        "description": "Disponer de un sistema de tracking que permita conocer la ubicacion, estado y telemetria de todos los vehiculos de la flota en tiempo real con actualizaciones cada 10 segundos."
+      },
+      {
+        "title": "Optimizacion de rutas y entregas",
+        "description": "Implementar un motor de planificacion de rutas que optimice los recorridos en funcion de entregas pendientes, trafico, ventanas horarias y capacidad de los vehiculos para reducir costes operativos."
+      },
+      {
+        "title": "Control operativo centralizado",
+        "description": "Proporcionar a los responsables de operaciones un panel de control unificado con alertas, KPIs de rendimiento, incidencias y reporting para la toma de decisiones basada en datos."
+      },
+      {
+        "title": "Integracion con dispositivos IoT embarcados",
+        "description": "Conectar la plataforma con los dispositivos OBD-II y sensores de temperatura instalados en los vehiculos para capturar datos de telemetria, consumo de combustible y condiciones de carga."
+      }
+    ],
+    "scope_blocks": [
+      {
+        "title": "Tracking de Flotas en Tiempo Real",
+        "short_description": "Modulo de visualizacion en tiempo real de la flota sobre mapa con historico de recorridos y geofencing.",
+        "long_description": "Sistema de seguimiento en tiempo real de todos los vehiculos de la flota sobre un mapa interactivo con actualizaciones mediante SignalR, historico de recorridos con reproduccion de trayectos, definicion de geocercas con alertas automaticas de entrada y salida, y panel de estado de cada vehiculo con indicadores de velocidad, direccion y paradas.",
+        "features": [
+          "Mapa interactivo con posicion en tiempo real de todos los vehiculos",
+          "Actualizaciones de posicion via SignalR cada 10 segundos",
+          "Historico de recorridos con reproduccion animada de trayectos",
+          "Geocercas configurables con alertas de entrada y salida",
+          "Panel de estado por vehiculo con velocidad, direccion y ultima parada",
+          "Filtrado de vehiculos por estado, zona, conductor y tipo de vehiculo"
+        ],
+        "technologies": [
+          "Blazor WebAssembly",
+          "SignalR",
+          "Azure Maps",
+          "Azure IoT Hub",
+          "Redis"
+        ],
+        "detailed_features": [
+          {
+            "title": "Mapa de tracking en tiempo real",
+            "description": "Visualizacion de la flota sobre Azure Maps con iconos diferenciados por tipo de vehiculo y estado, clustering automatico por nivel de zoom, y paneles laterales con detalle al seleccionar un vehiculo."
+          },
+          {
+            "title": "Sistema de geocercas y alertas",
+            "description": "Editor visual de geocercas poligonales y circulares sobre el mapa, con reglas de alerta configurables por horario y tipo de evento que notifican a los operadores via SignalR, email y push."
+          }
+        ]
+      },
+      {
+        "title": "Gestion de Rutas y Entregas",
+        "short_description": "Modulo de planificacion de rutas optimizadas y seguimiento del estado de entregas en tiempo real.",
+        "long_description": "Motor de planificacion de rutas que calcula los recorridos optimos considerando multiples restricciones como ventanas de entrega, capacidad del vehiculo, trafico en tiempo real y prioridades de cliente, con asignacion automatica a conductores, seguimiento del estado de cada entrega y confirmacion de entrega con firma digital y fotografia.",
+        "features": [
+          "Planificacion de rutas optimizadas con multiples restricciones",
+          "Asignacion automatica de entregas a vehiculos y conductores",
+          "Seguimiento del estado de entrega en tiempo real con timeline",
+          "Confirmacion de entrega con firma digital y fotografia",
+          "Recalculo dinamico de rutas ante imprevistos o trafico",
+          "Notificaciones al cliente final con ETA y tracking de su pedido",
+          "Ventanas de entrega configurables por cliente"
+        ],
+        "technologies": [
+          "Azure Maps Route API",
+          ".NET 8",
+          "Blazor",
+          "Azure Service Bus",
+          "SQL Server"
+        ],
+        "detailed_features": [
+          {
+            "title": "Motor de optimizacion de rutas",
+            "description": "Algoritmo de optimizacion que genera rutas eficientes teniendo en cuenta capacidad del vehiculo, ventanas horarias de entrega, trafico en tiempo real y restricciones viales, con recalculo automatico ante cambios o incidencias."
+          },
+          {
+            "title": "Flujo de confirmacion de entrega",
+            "description": "Proceso de confirmacion de entrega desde la app del conductor con captura de firma digital, fotografia como prueba de entrega, registro de incidencias y actualizacion automatica del estado en el panel de operaciones."
+          }
+        ]
+      },
+      {
+        "title": "Panel de Control Operativo",
+        "short_description": "Dashboard centralizado con KPIs de flota, alertas operativas, incidencias y reportes de rendimiento.",
+        "long_description": "Panel de control para el equipo de operaciones con vision global del estado de la flota, KPIs de rendimiento como entregas completadas, tiempos medios, consumo de combustible y coste por kilometro, sistema de alertas con escalado automatico, gestion de incidencias con workflow de resolucion, y reportes configurables exportables en PDF y Excel.",
+        "features": [
+          "Dashboard con KPIs en tiempo real: entregas, tiempos, costes y eficiencia",
+          "Sistema de alertas con niveles de severidad y escalado automatico",
+          "Gestion de incidencias con workflow de apertura, asignacion y cierre",
+          "Reportes de rendimiento por vehiculo, conductor y periodo",
+          "Comparativa de rendimiento entre periodos y zonas geograficas",
+          "Exportacion de reportes en PDF y Excel con graficas"
+        ],
+        "technologies": [
+          "Blazor Server",
+          "MudBlazor",
+          "Azure Application Insights",
+          "Power BI Embedded",
+          "Azure Functions"
+        ],
+        "detailed_features": [
+          {
+            "title": "Dashboard operativo en tiempo real",
+            "description": "Panel principal con widgets configurables que muestran KPIs de la flota en tiempo real: vehiculos activos, entregas en curso, entregas completadas, retrasos, alertas activas y consumo de combustible agregado, con actualizacion automatica via SignalR."
+          },
+          {
+            "title": "Modulo de incidencias y alertas",
+            "description": "Sistema de gestion de incidencias con workflow completo desde la deteccion automatica o reporte manual, asignacion a responsable, seguimiento de estado, SLA configurable y escalado automatico si no se resuelve en el tiempo establecido."
+          }
+        ]
+      },
+      {
+        "title": "Backend e Integraciones IoT",
+        "short_description": "Backend .NET con ingestion de datos IoT, procesamiento de telemetria y API para aplicaciones cliente.",
+        "long_description": "Backend desarrollado con .NET 8 que gestiona la ingestion de datos de telemetria desde dispositivos OBD-II y sensores de temperatura a traves de Azure IoT Hub, procesamiento en tiempo real de eventos con Azure Stream Analytics, almacenamiento en SQL Server y Time Series, API REST para las aplicaciones cliente y integraciones con el ERP de TransLogistica para sincronizacion de ordenes de entrega.",
+        "features": [
+          "Ingestion de telemetria via Azure IoT Hub con protocolo MQTT",
+          "Procesamiento de eventos en tiempo real con Azure Stream Analytics",
+          "API REST documentada con OpenAPI para aplicaciones cliente",
+          "Almacenamiento de series temporales para datos de telemetria",
+          "Integracion bidireccional con ERP para ordenes de entrega",
+          "Modulo de mantenimiento predictivo basado en datos de telemetria"
+        ],
+        "technologies": [
+          ".NET 8",
+          "Azure IoT Hub",
+          "Azure Stream Analytics",
+          "SQL Server",
+          "Azure Time Series Insights",
+          "Azure API Management"
+        ],
+        "detailed_features": [
+          {
+            "title": "Pipeline de ingestion IoT",
+            "description": "Pipeline de datos que recibe telemetria de los dispositivos OBD-II via MQTT a traves de Azure IoT Hub, la procesa con Stream Analytics para detectar anomalias y eventos en tiempo real, y la almacena en SQL Server y Time Series Insights para consultas historicas."
+          },
+          {
+            "title": "Integracion con ERP de TransLogistica",
+            "description": "Conector bidireccional con el ERP existente que importa ordenes de entrega y datos de clientes, y devuelve confirmaciones de entrega, pruebas documentales y actualizaciones de estado para cerrar el ciclo logistico."
+          }
+        ]
+      }
+    ],
+    "roadmap_phases": [
+      {
+        "name": "Fase 1: Analisis y Arquitectura IoT",
+        "duration": "3 semanas",
+        "description": "Analisis de requisitos operativos y logisticos, diseno de la arquitectura de ingestion IoT, modelado de datos de telemetria, prototipos de interfaz y plan de integracion con dispositivos existentes.",
+        "deliverables": [
+          "Documento de requisitos funcionales y tecnicos",
+          "Arquitectura de solucion IoT y backend",
+          "Modelo de datos de telemetria y operaciones",
+          "Prototipos Figma del panel de control y tracking",
+          "Plan de integracion con dispositivos OBD-II"
+        ],
+        "modules": [
+          "Tracking de Flotas en Tiempo Real",
+          "Backend e Integraciones IoT",
+          "Panel de Control Operativo"
+        ]
+      },
+      {
+        "name": "Fase 2: Backend, IoT y Tracking",
+        "duration": "6 semanas",
+        "description": "Desarrollo del backend .NET, configuracion de Azure IoT Hub, pipeline de ingestion de telemetria, API REST, modulo de tracking en tiempo real con SignalR y geocercas.",
+        "deliverables": [
+          "Backend .NET operativo con API REST documentada",
+          "Pipeline de ingestion IoT funcional",
+          "Modulo de tracking en tiempo real con mapa",
+          "Sistema de geocercas con alertas",
+          "Tests unitarios y de integracion"
+        ],
+        "modules": [
+          "Tracking de Flotas en Tiempo Real",
+          "Backend e Integraciones IoT"
+        ]
+      },
+      {
+        "name": "Fase 3: Rutas, Entregas y Panel",
+        "duration": "6 semanas",
+        "description": "Desarrollo del motor de optimizacion de rutas, flujo completo de gestion de entregas, panel de control operativo con KPIs, alertas, incidencias y reportes.",
+        "deliverables": [
+          "Motor de optimizacion de rutas funcional",
+          "Flujo de entregas con confirmacion digital",
+          "Panel de control operativo completo",
+          "Sistema de alertas e incidencias",
+          "Reportes exportables con Power BI Embedded"
+        ],
+        "modules": [
+          "Gestion de Rutas y Entregas",
+          "Panel de Control Operativo"
+        ]
+      },
+      {
+        "name": "Fase 4: Integraciones, Testing y Lanzamiento",
+        "duration": "3 semanas",
+        "description": "Integracion con el ERP de TransLogistica, pruebas con dispositivos IoT reales en vehiculos piloto, testing integral, pruebas de carga y despliegue en produccion Azure.",
+        "deliverables": [
+          "Integracion ERP bidireccional operativa",
+          "Pruebas con vehiculos piloto completadas",
+          "Tests E2E y pruebas de carga",
+          "Documentacion tecnica y de operaciones",
+          "Despliegue en produccion Azure"
+        ],
+        "modules": [
+          "Tracking de Flotas en Tiempo Real",
+          "Gestion de Rutas y Entregas",
+          "Panel de Control Operativo",
+          "Backend e Integraciones IoT"
+        ]
+      }
+    ],
+    "items": [
+      {
+        "type": "service",
+        "name": "Analisis de requisitos y arquitectura IoT",
+        "description": "Levantamiento de requisitos operativos y logisticos, diseno de la arquitectura de ingestion IoT con Azure, modelado de datos y plan de proyecto.",
+        "quantity": 12,
+        "unit": "dia",
+        "unit_price": 580,
+        "discount_percent": 0,
+        "phase": "Fase 1: Analisis y Arquitectura IoT"
+      },
+      {
+        "type": "service",
+        "name": "Diseno UX/UI del panel y tracking",
+        "description": "Diseno de wireframes y prototipos interactivos para el panel de control operativo, mapa de tracking, flujo de entregas y vistas de reportes.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 520,
+        "discount_percent": 0,
+        "phase": "Fase 1: Analisis y Arquitectura IoT"
+      },
+      {
+        "type": "service",
+        "name": "Desarrollo backend .NET y API REST",
+        "description": "Desarrollo del backend con .NET 8, endpoints REST para gestion de flotas, vehiculos, conductores y entregas, autenticacion y documentacion OpenAPI.",
+        "quantity": 24,
+        "unit": "dia",
+        "unit_price": 600,
+        "discount_percent": 0,
+        "phase": "Fase 2: Backend, IoT y Tracking"
+      },
+      {
+        "type": "service",
+        "name": "Pipeline de ingestion IoT y telemetria",
+        "description": "Configuracion de Azure IoT Hub, desarrollo del pipeline de procesamiento de telemetria con Stream Analytics, almacenamiento en Time Series y deteccion de anomalias.",
+        "quantity": 15,
+        "unit": "dia",
+        "unit_price": 640,
+        "discount_percent": 0,
+        "phase": "Fase 2: Backend, IoT y Tracking"
+      },
+      {
+        "type": "service",
+        "name": "Modulo de tracking en tiempo real",
+        "description": "Desarrollo del mapa de tracking con Blazor y Azure Maps, actualizaciones via SignalR, geocercas con editor visual y alertas configurables.",
+        "quantity": 16,
+        "unit": "dia",
+        "unit_price": 560,
+        "discount_percent": 0,
+        "phase": "Fase 2: Backend, IoT y Tracking"
+      },
+      {
+        "type": "service",
+        "name": "Motor de optimizacion de rutas",
+        "description": "Implementacion del algoritmo de optimizacion de rutas con Azure Maps Route API, considerando ventanas de entrega, capacidad de vehiculo y trafico en tiempo real.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 620,
+        "discount_percent": 0,
+        "phase": "Fase 3: Rutas, Entregas y Panel"
+      },
+      {
+        "type": "service",
+        "name": "Gestion de entregas y confirmacion digital",
+        "description": "Flujo completo de gestion de entregas: asignacion, seguimiento, confirmacion con firma y foto, notificaciones al cliente y actualizacion de estado.",
+        "quantity": 16,
+        "unit": "dia",
+        "unit_price": 540,
+        "discount_percent": 0,
+        "phase": "Fase 3: Rutas, Entregas y Panel"
+      },
+      {
+        "type": "service",
+        "name": "Panel de control operativo y reportes",
+        "description": "Dashboard con KPIs en tiempo real, sistema de alertas con escalado, gestion de incidencias, reportes con Power BI Embedded y exportacion a PDF y Excel.",
+        "quantity": 18,
+        "unit": "dia",
+        "unit_price": 560,
+        "discount_percent": 0,
+        "phase": "Fase 3: Rutas, Entregas y Panel"
+      },
+      {
+        "type": "service",
+        "name": "Integracion con ERP y portales de clientes",
+        "description": "Conector bidireccional con el ERP de TransLogistica para sincronizacion de ordenes, confirmaciones y datos de clientes, y portal de seguimiento para clientes finales.",
+        "quantity": 14,
+        "unit": "dia",
+        "unit_price": 580,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integraciones, Testing y Lanzamiento"
+      },
+      {
+        "type": "service",
+        "name": "Testing integral y pruebas con vehiculos piloto",
+        "description": "Tests unitarios, de integracion y E2E, pruebas de carga, pruebas funcionales con dispositivos IoT reales en vehiculos piloto y validacion de telemetria.",
+        "quantity": 14,
+        "unit": "dia",
+        "unit_price": 500,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integraciones, Testing y Lanzamiento"
+      },
+      {
+        "type": "service",
+        "name": "Despliegue en Azure y configuracion DevOps",
+        "description": "Configuracion de infraestructura Azure con AKS, SQL Database, IoT Hub, pipelines CI/CD con Azure DevOps, monitorizacion con Application Insights y despliegue en produccion.",
+        "quantity": 10,
+        "unit": "dia",
+        "unit_price": 480,
+        "discount_percent": 0,
+        "phase": "Fase 4: Integraciones, Testing y Lanzamiento"
+      }
+    ],
+    "team_members": [
+      {
+        "profile_type": "Tech Lead / Arquitecto IoT",
+        "description": "Lider tecnico con experiencia en arquitecturas IoT, Azure, sistemas de tiempo real y plataformas logisticas.",
+        "quantity": 1,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Backend Developer .NET",
+        "description": "Desarrollador backend senior especializado en .NET 8, Azure IoT Hub, Stream Analytics y APIs de alto rendimiento.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Frontend Developer Blazor",
+        "description": "Desarrollador frontend senior con experiencia en Blazor, SignalR, visualizacion de mapas y dashboards en tiempo real.",
+        "quantity": 2,
+        "dedication": "full_time"
+      },
+      {
+        "profile_type": "Especialista IoT",
+        "description": "Ingeniero especializado en dispositivos OBD-II, protocolos MQTT, Azure IoT Hub y procesamiento de telemetria vehicular.",
+        "quantity": 1,
+        "dedication": "part_time"
+      },
+      {
+        "profile_type": "QA Engineer",
+        "description": "Ingeniero de calidad con experiencia en testing de sistemas en tiempo real, pruebas de carga y validacion de integraciones IoT.",
+        "quantity": 1,
+        "dedication": "part_time"
+      },
+      {
+        "profile_type": "Project Manager",
+        "description": "Gestor de proyecto con experiencia en proyectos de logistica, flotas y sistemas IoT con metodologias agiles.",
+        "quantity": 1,
+        "dedication": "part_time"
+      }
+    ],
+    "conditions": {
+      "payment_terms": [
+        "15% al inicio del proyecto",
+        "25% al completar Fase 2 (Backend, IoT y Tracking)",
+        "35% al completar Fase 3 (Rutas, Entregas y Panel)",
+        "25% en la entrega final tras Fase 4"
+      ],
+      "included_services": [
+        "Reuniones semanales de seguimiento por videoconferencia",
+        "Documentacion tecnica de arquitectura, API y operaciones",
+        "Formacion al equipo de operaciones de TransLogistica (3 sesiones presenciales)",
+        "Soporte post-lanzamiento durante 4 semanas",
+        "Acceso completo al repositorio de codigo fuente",
+        "Garantia de correccion de bugs durante 6 meses",
+        "Asistencia en la configuracion de dispositivos IoT piloto (5 vehiculos)"
+      ],
+      "additional_services": [
+        {
+          "name": "Mantenimiento mensual y soporte tecnico",
+          "price": 2800
+        },
+        {
+          "name": "App movil nativa para conductores (iOS y Android)",
+          "price": 19000
+        },
+        {
+          "name": "Modulo de mantenimiento predictivo avanzado con ML",
+          "price": 14000
+        },
+        {
+          "name": "Integracion con tacografo digital y normativa EU",
+          "price": 9500
+        }
+      ]
+    },
+    "notes": "El presupuesto incluye licencias de desarrollo y entornos de staging en Azure. No incluye el coste de los dispositivos OBD-II ni sensores de temperatura que deberan ser adquiridos por TransLogistica; se recomienda el modelo Teltonika FMB920 ya validado con nuestra plataforma. Las licencias de produccion de Azure (IoT Hub, AKS, SQL Database, Maps) seran contratadas directamente por el cliente. La fase de pruebas con vehiculos piloto requiere la disponibilidad de 5 vehiculos designados por el cliente durante 2 semanas. Precios sin IVA.",
+    "terms": "Propuesta valida por 30 dias naturales desde la fecha de emision. Los plazos estimados pueden variar en funcion de la disponibilidad del cliente para validaciones, acceso a vehiculos piloto y feedback. Cualquier cambio de alcance sera evaluado y presupuestado por separado mediante un proceso formal de control de cambios. La integracion con el ERP existente esta sujeta a la disponibilidad de documentacion tecnica y acceso a entornos de pruebas por parte de TransLogistica."
+  },
+  "source": "logistics_event",
+  "ingested_by": "miguel.romero"
+}
