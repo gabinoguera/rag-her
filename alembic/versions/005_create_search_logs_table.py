@@ -1,4 +1,6 @@
-"""Create search_logs table.
+"""[LEGACY] Migración del dominio rag-estimation-service. Conservada para integridad de la cadena down_revision.
+
+Create search_logs table.
 
 Revision ID: 005
 Revises: 004

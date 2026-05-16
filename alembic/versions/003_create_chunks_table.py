@@ -1,4 +1,6 @@
-"""Create chunks table.
+"""[LEGACY] Migración del dominio rag-estimation-service. Conservada para integridad de la cadena down_revision.
+
+Create chunks table.
 
 Revision ID: 003
 Revises: 002

@@ -1,4 +1,6 @@
-"""Create ingestion_logs table.
+"""[LEGACY] Migración del dominio rag-estimation-service. Conservada para integridad de la cadena down_revision.
+
+Create ingestion_logs table.
 
 Revision ID: 004
 Revises: 003
