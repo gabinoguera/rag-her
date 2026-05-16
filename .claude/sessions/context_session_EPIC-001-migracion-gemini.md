@@ -71,6 +71,13 @@ service._client.aio.models.embed_content = AsyncMock(return_value=mock_response)
 service._client.aio.models.generate_content = AsyncMock(return_value=mock_response)
 ```
 
+## Archivos de test actualizados (Wave 3 — RAG-04)
+
+| Archivo | Acción | Fecha |
+|---|---|---|
+| `tests/test_core/test_ranking.py` | ACTUALIZADO: eliminados `cost_range_score`/`technology_match_score`, nueva firma `calculate_final_score(similarity, recency)`, `ScoredResult` sin campos legacy | 2026-05-16 |
+| `tests/test_api/test_search.py` | ACTUALIZADO: eliminados tests con `_ingest_full_quote`, filtros legacy y stats; añadidos tests de endpoints legacy 404 | 2026-05-16 |
+
 ## Criterios de Aceptacion (@qa-criteria-validator)
 
 **Seccion escrita en:** `issues/EPIC-001-migracion-gemini.md` § Acceptance Criteria

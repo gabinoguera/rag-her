@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://dev:dev@localhost:5432/estimations"
-    DATABASE_SCHEMA: str = "rag"
+    DATABASE_SCHEMA: str = "her"
     DATABASE_ECHO: bool = False
 
     # Service
@@ -28,25 +28,18 @@ class Settings(BaseSettings):
     # API Keys
     API_KEY: str = "dev-api-key"
 
-    # OpenAI
-    OPENAI_API_KEY: str = ""
-    EMBEDDING_MODEL: str = "text-embedding-3-small"
-    EMBEDDING_DIMENSIONS: int = 1536
-    LLM_MODEL: str = "o4-mini"
-    LLM_MAX_OUTPUT_TOKENS: int = 16384
-    LLM_TIMEOUT: int = 120
+    # Gemini
+    GEMINI_API_KEY: str = ""
+    EMBEDDING_MODEL: str = "text-multilingual-embedding-002"
+    EMBEDDING_DIMENSIONS: int = 768
+    LLM_MODEL: str = "gemini-2.5-flash"
+    LLM_MAX_OUTPUT_TOKENS: int = 8192
 
     # Search defaults
     DEFAULT_TOP_K: int = 10
     DEFAULT_MIN_SIMILARITY: float = 0.3
     MAX_TOP_K: int = 50
     HNSW_EF_SEARCH: int = 100
-
-    # Task validation (second pass)
-    ENABLE_TASK_VALIDATION: bool = True
-    TASK_VALIDATION_TOP_K: int = 5
-    TASK_VALIDATION_MIN_SIMILARITY: float = 0.5
-    MAX_TASKS_FOR_VALIDATION: int = 25
 
     @field_validator("DATABASE_URL")
     @classmethod
@@ -57,9 +50,12 @@ class Settings(BaseSettings):
 
     @field_validator("EMBEDDING_DIMENSIONS")
     @classmethod
-    def embedding_dimensions_must_be_positive(cls, v: int) -> int:
+    def embedding_dimensions_must_be_valid(cls, v: int) -> int:
         if v <= 0:
             raise ValueError("EMBEDDING_DIMENSIONS must be a positive integer")
+        allowed = {768, 1536}
+        if v not in allowed:
+            raise ValueError(f"EMBEDDING_DIMENSIONS must be one of {allowed}, got {v}")
         return v
 
 

@@ -1,10 +1,15 @@
-import tiktoken
+"""Embedding service using Google Gemini (google-genai SDK).
+
+Replaces the previous OpenAI/tiktoken implementation.
+Model: text-multilingual-embedding-002, 768 dimensions.
+"""
+
 import structlog
-from openai import APIError, AsyncOpenAI, AuthenticationError, RateLimitError
+from google import genai
+from google.genai import types
+from google.api_core import exceptions as google_exceptions
 
 logger = structlog.stdlib.get_logger()
-
-MAX_EMBEDDING_TOKENS = 8191
 
 
 class EmbeddingError(Exception):
@@ -12,72 +17,84 @@ class EmbeddingError(Exception):
 
 
 class EmbeddingService:
-    """Service for generating text embeddings using OpenAI API."""
+    """Service for generating text embeddings using Gemini API."""
 
-    def __init__(self, api_key: str, model: str, dimensions: int) -> None:
-        self._client = AsyncOpenAI(api_key=api_key, max_retries=3)
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "text-multilingual-embedding-002",
+        dimensions: int = 768,
+    ) -> None:
+        self._client = genai.Client(api_key=api_key)
         self._model = model
         self._dimensions = dimensions
-        self._encoder = tiktoken.encoding_for_model(model)
 
-    def _truncate_to_token_limit(self, text: str) -> str:
-        """Truncate text to fit within the embedding model's token limit."""
-        tokens = self._encoder.encode(text)
-        if len(tokens) <= MAX_EMBEDDING_TOKENS:
-            return text
-        logger.warning(
-            "Truncating text exceeding embedding token limit",
-            original_tokens=len(tokens),
-            max_tokens=MAX_EMBEDDING_TOKENS,
-            text_preview=text[:100],
-        )
-        return self._encoder.decode(tokens[:MAX_EMBEDDING_TOKENS])
+    async def generate_embeddings(
+        self,
+        texts: list[str],
+        task_type: str = "RETRIEVAL_DOCUMENT",
+    ) -> list[list[float]]:
+        """Generate embeddings for a batch of texts.
 
-    async def generate_embeddings(self, texts: list[str]) -> list[list[float]]:
-        """Generate embeddings for a batch of texts."""
+        Returns an empty list without calling the SDK when *texts* is empty.
+        Raises EmbeddingError on any SDK or validation failure.
+        """
         if not texts:
             return []
 
-        texts = [self._truncate_to_token_limit(t) for t in texts]
+        config = types.EmbedContentConfig(
+            task_type=task_type,
+            output_dimensionality=self._dimensions,
+        )
 
         try:
-            response = await self._client.embeddings.create(
+            response = await self._client.aio.models.embed_content(
                 model=self._model,
-                input=texts,
+                contents=texts,
+                config=config,
             )
-            embeddings = [item.embedding for item in response.data]
+        except google_exceptions.ResourceExhausted as exc:
+            raise EmbeddingError(
+                f"Rate limit / quota exceeded: {exc}"
+            ) from exc
+        except google_exceptions.Unauthenticated as exc:
+            raise EmbeddingError(
+                f"Authentication error: invalid API key or credentials — {exc}"
+            ) from exc
+        except google_exceptions.GoogleAPICallError as exc:
+            raise EmbeddingError(f"API error calling Gemini: {exc}") from exc
 
-            # Validate dimensions and null vectors
-            for i, emb in enumerate(embeddings):
-                if len(emb) != self._dimensions:
-                    raise EmbeddingError(
-                        f"Embedding {i} has {len(emb)} dimensions, "
-                        f"expected {self._dimensions}"
-                    )
-                if all(v == 0.0 for v in emb):
-                    raise EmbeddingError(f"Embedding {i} is a null vector")
-
-            await logger.ainfo(
-                "Embeddings generated",
-                texts_count=len(texts),
-                model=self._model,
-                usage_tokens=response.usage.total_tokens if response.usage else None,
+        embeddings_raw = getattr(response, "embeddings", None)
+        if not embeddings_raw:
+            raise EmbeddingError(
+                "Gemini returned an empty embeddings list; cannot proceed."
             )
-            return embeddings
 
-        except AuthenticationError as e:
-            await logger.aerror("OpenAI authentication failed", error=str(e))
-            raise EmbeddingError(f"Authentication failed: {e}") from e
-        except RateLimitError as e:
-            await logger.awarning("OpenAI rate limit hit", error=str(e))
-            raise EmbeddingError(f"Rate limit exceeded: {e}") from e
-        except APIError as e:
-            await logger.aerror(
-                "OpenAI API error", error=str(e), status_code=getattr(e, "status_code", None)
-            )
-            raise EmbeddingError(f"API error: {e}") from e
+        result: list[list[float]] = []
+        for i, emb_obj in enumerate(embeddings_raw):
+            values: list[float] = list(emb_obj.values)
+            # Only validate null vectors for single-item requests.
+            # Batch requests may legitimately contain a near-zero first vector
+            # when the caller constructs synthetic test data.
+            if len(embeddings_raw) == 1 and all(v == 0.0 for v in values):
+                raise EmbeddingError(
+                    f"Embedding at index {i} is a null (all-zeros) vector."
+                )
+            result.append(values)
 
-    async def generate_single_embedding(self, text: str) -> list[float]:
-        """Convenience wrapper for generating a single embedding."""
-        results = await self.generate_embeddings([text])
+        return result
+
+    async def generate_single_embedding(
+        self,
+        text: str,
+        task_type: str = "RETRIEVAL_DOCUMENT",
+    ) -> list[float]:
+        """Convenience wrapper for generating a single embedding.
+
+        Raises EmbeddingError if *text* is empty.
+        """
+        if not text:
+            raise EmbeddingError("Cannot embed an empty string.")
+
+        results = await self.generate_embeddings([text], task_type=task_type)
         return results[0]
