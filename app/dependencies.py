@@ -50,3 +50,25 @@ def get_generation_service(
         model=settings.LLM_MODEL,
         max_output_tokens=settings.LLM_MAX_OUTPUT_TOKENS,
     )
+
+
+def get_stt_service(
+    settings: Settings = Depends(get_settings),
+) -> "STTService":  # noqa: F821
+    from app.core.speech import STTService
+
+    return STTService(
+        project=settings.GOOGLE_CLOUD_PROJECT,
+        language_code=settings.STT_LANGUAGE_CODE,
+    )
+
+
+def get_tts_service(
+    settings: Settings = Depends(get_settings),
+) -> "TTSService":  # noqa: F821
+    from app.core.tts import TTSService
+
+    return TTSService(
+        language_code=settings.TTS_LANGUAGE_CODE,
+        voice_name=settings.TTS_VOICE_NAME,
+    )

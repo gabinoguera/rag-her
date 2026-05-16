@@ -35,6 +35,12 @@ class Settings(BaseSettings):
     LLM_MODEL: str = "gemini-2.5-flash"
     LLM_MAX_OUTPUT_TOKENS: int = 8192
 
+    # Google Cloud (Speech / TTS)
+    GOOGLE_CLOUD_PROJECT: str = ""
+    STT_LANGUAGE_CODE: str = "es-ES"
+    TTS_LANGUAGE_CODE: str = "es-ES"
+    TTS_VOICE_NAME: str = "es-ES-Neural2-A"
+
     # Search defaults
     DEFAULT_TOP_K: int = 10
     DEFAULT_MIN_SIMILARITY: float = 0.3
