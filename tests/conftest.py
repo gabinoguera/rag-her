@@ -123,8 +123,6 @@ def _make_mock_embedding_service() -> MagicMock:
 
 @pytest.fixture
 async def client_with_mock_embeddings() -> AsyncIterator[AsyncClient]:
-    from sqlalchemy import text as sa_text
-
     from app.db import init_db
     from app.dependencies import get_embedding_service
     from app.main import app
@@ -136,13 +134,6 @@ async def client_with_mock_embeddings() -> AsyncIterator[AsyncClient]:
 
     app.dependency_overrides[get_settings] = get_test_settings
     app.dependency_overrides[get_embedding_service] = lambda: mock_emb_service
-
-    # Clean tables before each test to ensure isolation
-    engine = create_async_engine(DATABASE_URL, echo=False, poolclass=NullPool)
-    async with engine.begin() as conn:
-        await conn.execute(sa_text("-- DELETE FROM rag.chunks (legacy, removed in EPIC-001)"))
-        await conn.execute(sa_text("-- DELETE FROM rag.documents (legacy, removed in EPIC-001)"))
-    await engine.dispose()
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
@@ -163,8 +154,6 @@ def _make_mock_generation_service() -> MagicMock:
 
 @pytest.fixture
 async def client_with_mock_llm() -> AsyncIterator[AsyncClient]:
-    from sqlalchemy import text as sa_text
-
     from app.db import init_db
     from app.dependencies import get_embedding_service, get_generation_service
     from app.main import app
@@ -178,13 +167,6 @@ async def client_with_mock_llm() -> AsyncIterator[AsyncClient]:
     app.dependency_overrides[get_settings] = get_test_settings
     app.dependency_overrides[get_embedding_service] = lambda: mock_emb_service
     app.dependency_overrides[get_generation_service] = lambda: mock_gen_service
-
-    # Clean tables before each test
-    engine = create_async_engine(DATABASE_URL, echo=False, poolclass=NullPool)
-    async with engine.begin() as conn:
-        await conn.execute(sa_text("-- DELETE FROM rag.chunks (legacy, removed in EPIC-001)"))
-        await conn.execute(sa_text("-- DELETE FROM rag.documents (legacy, removed in EPIC-001)"))
-    await engine.dispose()
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

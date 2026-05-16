@@ -40,6 +40,13 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection) -> None:  # type: ignore[no-untyped-def]
+    # Ensure the version_table_schema exists before Alembic tries to write to it.
+    # This is a no-op if the schema was already created by migration 006.
+    connection.execute(
+        __import__("sqlalchemy").text(
+            f"CREATE SCHEMA IF NOT EXISTS {DATABASE_SCHEMA}"
+        )
+    )
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
@@ -60,6 +67,7 @@ async def run_async_migrations() -> None:
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
+        await connection.commit()
 
     await connectable.dispose()
 
