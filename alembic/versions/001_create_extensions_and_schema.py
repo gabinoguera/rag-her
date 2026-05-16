@@ -1,4 +1,6 @@
-"""Create extensions and schema.
+"""[LEGACY] Migración del dominio rag-estimation-service. Conservada para integridad de la cadena down_revision.
+
+Create extensions and schema.
 
 Revision ID: 001
 Revises:

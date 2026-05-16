@@ -1,4 +1,6 @@
-"""Create documents table.
+"""[LEGACY] Migración del dominio rag-estimation-service. Conservada para integridad de la cadena down_revision.
+
+Create documents table.
 
 Revision ID: 002
 Revises: 001

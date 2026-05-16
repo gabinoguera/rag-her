@@ -30,16 +30,6 @@ def get_embedding_service(
     )
 
 
-async def get_retrieval_service(
-    db: AsyncSession = Depends(get_db_session),
-    embedding_service: EmbeddingService = Depends(get_embedding_service),
-    settings: Settings = Depends(get_settings),
-) -> "RetrievalService":  # noqa: F821
-    from app.core.retrieval import RetrievalService
-
-    return RetrievalService(db=db, embedding_service=embedding_service, settings=settings)
-
-
 def get_generation_service(
     settings: Settings = Depends(get_settings),
 ) -> "GenerationService":  # noqa: F821
