@@ -1,43 +1,12 @@
 import uuid
 from datetime import UTC, datetime, timedelta
-from decimal import Decimal
 
 from app.core.ranking import (
     ScoredResult,
     calculate_final_score,
-    cost_range_score,
     deduplicate_results,
     recency_score,
-    technology_match_score,
 )
-
-
-class TestTechnologyMatchScore:
-    def test_perfect_match(self) -> None:
-        score = technology_match_score(["React", "Node.js"], ["React", "Node.js"])
-        assert score == 1.0
-
-    def test_partial_match(self) -> None:
-        score = technology_match_score(
-            ["React", "Node.js", "PostgreSQL"], ["React", "Vue.js"]
-        )
-        assert 0.0 < score < 1.0
-
-    def test_no_match(self) -> None:
-        score = technology_match_score(["React"], ["Django"])
-        assert score == 0.0
-
-    def test_empty_query_techs_returns_neutral(self) -> None:
-        score = technology_match_score(["React"], [])
-        assert score == 0.5
-
-    def test_none_query_techs_returns_neutral(self) -> None:
-        score = technology_match_score(["React"], None)
-        assert score == 0.5
-
-    def test_empty_chunk_techs_returns_zero(self) -> None:
-        score = technology_match_score([], ["React"])
-        assert score == 0.0
 
 
 class TestRecencyScore:
@@ -58,47 +27,27 @@ class TestRecencyScore:
         assert score < 0.2
 
 
-class TestCostRangeScore:
-    def test_normal_value(self) -> None:
-        costs = [100.0, 110.0, 105.0, 95.0, 108.0]
-        score = cost_range_score(105.0, costs)
-        assert score == 1.0
-
-    def test_severe_outlier(self) -> None:
-        costs = [100.0, 110.0, 105.0, 95.0, 500.0]
-        score = cost_range_score(500.0, costs)
-        assert score == 0.2
-
-    def test_none_cost_returns_neutral(self) -> None:
-        costs = [100.0, 200.0, 300.0]
-        score = cost_range_score(None, costs)
-        assert score == 0.5
-
-    def test_fewer_than_3_returns_neutral(self) -> None:
-        costs = [100.0, 200.0]
-        score = cost_range_score(150.0, costs)
-        assert score == 0.5
-
-
 class TestCalculateFinalScore:
-    def test_perfect_scores_equal_one(self) -> None:
-        score = calculate_final_score(
-            similarity=1.0, tech_match=1.0, recency=1.0, cost_range=1.0
-        )
-        assert abs(score - 1.0) < 1e-9
+    def test_calculate_final_score_weights(self) -> None:
+        result = calculate_final_score(similarity=1.0, recency=1.0)
+        assert result == 1.0
 
-    def test_weights_are_correct(self) -> None:
-        # Only similarity=1.0, rest=0.0
-        score = calculate_final_score(
-            similarity=1.0, tech_match=0.0, recency=0.0, cost_range=0.0
-        )
-        assert abs(score - 0.50) < 1e-9
+    def test_calculate_final_score_similarity_weight(self) -> None:
+        result = calculate_final_score(similarity=1.0, recency=0.0)
+        assert abs(result - 0.70) < 0.001
 
-        # Only tech=1.0
-        score = calculate_final_score(
-            similarity=0.0, tech_match=1.0, recency=0.0, cost_range=0.0
-        )
-        assert abs(score - 0.25) < 1e-9
+    def test_calculate_final_score_recency_weight(self) -> None:
+        result = calculate_final_score(similarity=0.0, recency=1.0)
+        assert abs(result - 0.30) < 0.001
+
+    def test_zero_scores_equal_zero(self) -> None:
+        result = calculate_final_score(similarity=0.0, recency=0.0)
+        assert result == 0.0
+
+    def test_partial_scores_combine_correctly(self) -> None:
+        # 0.70 * 0.8 + 0.30 * 0.6 = 0.56 + 0.18 = 0.74
+        result = calculate_final_score(similarity=0.8, recency=0.6)
+        assert abs(result - 0.74) < 0.001
 
 
 class TestDeduplicateResults:
@@ -115,9 +64,6 @@ class TestDeduplicateResults:
             content_text="test",
             metadata=None,
             project_title="Test",
-            technologies=None,
-            total_cost=None,
-            currency=None,
             created_at=datetime.now(UTC),
             similarity_score=0.9,
             final_score=final_score,
