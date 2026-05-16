@@ -1,3 +1,4 @@
+import os
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -22,8 +23,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     init_db(settings)
 
     await logger.ainfo(
-        "Starting RAG Estimation Service",
-        version="0.1.0",
+        "Starting HER Conversational Intelligence API",
+        version="0.2.0",
         environment=settings.ENVIRONMENT,
         host=settings.SERVICE_HOST,
         port=settings.SERVICE_PORT,
@@ -33,16 +34,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     yield
     await close_db()
-    await logger.ainfo("Shutting down RAG Estimation Service")
+    await logger.ainfo("Shutting down HER Conversational Intelligence API")
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
 
     application = FastAPI(
-        title="RAG Estimation Service",
-        description="AI-powered software estimation service using RAG",
-        version="0.1.0",
+        title="HER — Conversational Intelligence API",
+        description="Backend conversacional para check-ins de empleados con análisis semántico vía Gemini.",
+        version="0.2.0",
         docs_url="/docs",
         redoc_url="/redoc",
         lifespan=lifespan,
@@ -71,6 +72,13 @@ def create_app() -> FastAPI:
 
     # Routers
     application.include_router(v1_router, prefix="/api/v1")
+
+    # Static files — mount last so API routes take priority
+    web_dir = os.path.join(os.path.dirname(__file__), "..", "adapters", "primary", "web")
+    if os.path.isdir(web_dir):
+        from fastapi.staticfiles import StaticFiles
+
+        application.mount("/", StaticFiles(directory=web_dir, html=True), name="web")
 
     return application
 
