@@ -17,7 +17,8 @@ async def get_current_settings(
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     factory = get_session_factory()
     async with factory() as session:
-        yield session
+        async with session.begin():
+            yield session
 
 
 def get_embedding_service(
@@ -50,3 +51,12 @@ def get_generation_service(
         model=settings.LLM_MODEL,
         max_output_tokens=settings.LLM_MAX_OUTPUT_TOKENS,
     )
+
+
+def get_checkin_service(
+    db: AsyncSession = Depends(get_db_session),
+    embedding_service: EmbeddingService = Depends(get_embedding_service),
+) -> "CheckInService":  # noqa: F821
+    from app.services.checkin_service import CheckInService
+
+    return CheckInService(db=db, embedding_service=embedding_service)
