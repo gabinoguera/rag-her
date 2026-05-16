@@ -20,6 +20,9 @@ database_url = os.environ.get("DATABASE_URL")
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
 
+# Schema HER
+DATABASE_SCHEMA = os.environ.get("DATABASE_SCHEMA", "her")
+
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
@@ -29,7 +32,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         include_schemas=True,
-        version_table_schema="public",
+        version_table_schema=DATABASE_SCHEMA,
     )
 
     with context.begin_transaction():
@@ -41,7 +44,7 @@ def do_run_migrations(connection) -> None:  # type: ignore[no-untyped-def]
         connection=connection,
         target_metadata=target_metadata,
         include_schemas=True,
-        version_table_schema="public",
+        version_table_schema=DATABASE_SCHEMA,
     )
 
     with context.begin_transaction():

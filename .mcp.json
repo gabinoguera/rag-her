@@ -1,0 +1,86 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
+    },
+    "sequentialthinking": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "mcp/sequentialthinking"
+      ]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    "concurrent-browser": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "concurrent-browser-mcp",
+        "--max-instances",
+        "20"
+      ]
+    },
+    "memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>"
+      }
+    },
+    "opik": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "opik-mcp",
+        "--apiKey",
+        "qhCRonp9FZOIPXwQqDocrCm2W"
+      ]
+    },
+    "sentry": {
+      "type": "http",
+      "url": "https://mcp.sentry.dev/mcp"
+    },
+    "logfire": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "logfire-mcp@latest",
+        "--read-token=pylf_v1_us_4gGNXf3SKxkrWvPzCc1Ynw1TcJLjWx2PFH580PcZH3KG"
+      ]
+    },
+    "drawio": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@drawio/mcp"
+      ]
+    }
+  }
+}
