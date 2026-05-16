@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     def embedding_dimensions_must_be_valid(cls, v: int) -> int:
         if v <= 0:
             raise ValueError("EMBEDDING_DIMENSIONS must be a positive integer")
-        allowed = {768, 1536}
+        allowed = {768}
         if v not in allowed:
             raise ValueError(f"EMBEDDING_DIMENSIONS must be one of {allowed}, got {v}")
         return v

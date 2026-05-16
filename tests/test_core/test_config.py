@@ -48,3 +48,12 @@ def test_database_schema_is_her() -> None:
     """DATABASE_SCHEMA debe ser 'her' por defecto."""
     s = Settings(DATABASE_URL="postgresql+asyncpg://dev:dev@localhost:5432/test")
     assert s.DATABASE_SCHEMA == "her"
+
+
+def test_embedding_dimensions_1536_raises_error() -> None:
+    """EMBEDDING_DIMENSIONS=1536 (OpenAI legacy) debe rechazarse con ValueError — EPIC-007."""
+    with pytest.raises(Exception):
+        Settings(
+            DATABASE_URL="postgresql+asyncpg://dev:dev@localhost:5432/test",
+            EMBEDDING_DIMENSIONS=1536,
+        )
