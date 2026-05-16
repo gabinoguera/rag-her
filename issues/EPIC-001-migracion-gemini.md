@@ -1,6 +1,6 @@
 # EPIC-001: Migración del Núcleo RAG a Gemini
 
-**Status:** open
+**Status:** in-review
 **Espera a:** EPIC-000
 
 ## Descripción
@@ -1718,3 +1718,4 @@ grep "EMBEDDING_DIMENSIONS" app/config.py
 ### Notas de Progreso
 <!-- Auto-actualizado por /worktree-tdd -->
 <!-- Formato: [YYYY-MM-DD HH:MM] Fase X: estado — notas -->
+PR: https://github.com/gabinoguera/rag-her/pull/1

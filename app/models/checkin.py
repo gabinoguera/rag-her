@@ -22,10 +22,10 @@ class CheckIn(HerBase):
         default=uuid.uuid4,
         server_default=text("uuid_generate_v4()"),
     )
-    employee_id: Mapped[uuid.UUID] = mapped_column(
+    employee_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("her.employees.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
     )
     session_id: Mapped[str] = mapped_column(String, nullable=False, unique=True, index=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="in_progress")

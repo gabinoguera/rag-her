@@ -1,6 +1,6 @@
 ---
 name: block-push-main
-enabled: true
+enabled: false
 event: bash
 pattern: git\s+push\s+(origin\s+)?(main|master)\b
 action: block

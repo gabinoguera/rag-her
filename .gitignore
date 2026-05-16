@@ -30,3 +30,6 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Google Cloud credentials
+almawolf-7bbb108314b5.json

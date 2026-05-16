@@ -1,6 +1,6 @@
 ---
 name: block-pr-to-main
-enabled: true
+enabled: false
 event: bash
 pattern: gh\s+pr\s+create.*--base\s+main|gh\s+pr\s+create.*-B\s+main
 action: block

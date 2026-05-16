@@ -43,7 +43,7 @@ GOOGLE_APPLICATION_CREDENTIALS=<en .env>
 |------|--------|----|
 | EPIC-000 — Setup entorno | ✅ completed | — |
 | EPIC-001 — Migración Gemini | ✅ in-review | [#1](https://github.com/gabinoguera/rag-her/pull/1) |
-| EPIC-002 — Modelos DB | 🔄 open | — |
+| EPIC-002 — Modelos DB | ✅ in-review | [#2](https://github.com/gabinoguera/rag-her/pull/2) |
 | EPIC-003 — Speech STT/TTS | ⏳ open (espera EPIC-002) | — |
 | EPIC-004 — Check-in empleado | ⏳ open (espera EPIC-002) | — |
 | EPIC-005 — Consulta CEO | ⏳ open (espera EPIC-002) | — |
