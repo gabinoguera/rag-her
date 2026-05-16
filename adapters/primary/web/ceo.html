@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HER — Consulta Dirección</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* Page layout */
+    .page-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ceo-main {
+      flex: 1;
+      padding: 0 1rem 3rem;
+    }
+
+    .ceo-container {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* Query section */
+    .query-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .query-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--secondary-fg);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .query-input-row {
+      display: flex;
+      gap: 0.625rem;
+      align-items: flex-end;
+    }
+
+    #query-input {
+      flex: 1;
+      min-height: 56px;
+      max-height: 160px;
+      resize: vertical;
+    }
+
+    .voice-btn {
+      flex-shrink: 0;
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius);
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      color: var(--muted-fg);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .voice-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .voice-btn.recording {
+      background: hsl(0 62% 50% / 0.15);
+      border-color: var(--destructive);
+      color: var(--destructive);
+    }
+
+    .query-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.875rem;
+      flex-wrap: wrap;
+    }
+
+    #btn-query {
+      flex: 1;
+      min-width: 160px;
+      padding: 0.75rem 1.25rem;
+    }
+
+    #btn-summary {
+      flex: 1;
+      min-width: 160px;
+      padding: 0.75rem 1.25rem;
+    }
+
+    /* Status bar */
+    .ceo-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Answer section */
+    .answer-section {
+      display: none;
+    }
+    .answer-section.visible {
+      display: block;
+    }
+
+    .answer-card {
+      margin-bottom: 1rem;
+    }
+
+    .answer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.875rem;
+      flex-wrap: wrap;
+    }
+
+    .answer-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .answer-label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--muted-fg);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .answer-text {
+      font-size: 1rem;
+      color: var(--foreground);
+      line-height: 1.7;
+    }
+
+    .answer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    #btn-replay-answer {
+      font-size: 0.8125rem;
+      color: var(--muted-fg);
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    #btn-replay-answer:hover { color: var(--primary); }
+
+    /* Summary section */
+    .summary-section {
+      display: none;
+    }
+    .summary-section.visible {
+      display: block;
+    }
+    .summary-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      margin-bottom: 0.875rem;
+      flex-wrap: wrap;
+    }
+    .summary-stat {
+      font-size: 0.8125rem;
+      color: var(--muted-fg);
+    }
+    .summary-stat strong {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .summary-text {
+      font-size: 1rem;
+      color: var(--foreground);
+      line-height: 1.7;
+    }
+
+    /* Sources section */
+    .sources-section {
+      margin-top: 1rem;
+    }
+    details.sources-details {
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    details.sources-details summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary-fg);
+      list-style: none;
+      user-select: none;
+    }
+    details.sources-details summary::-webkit-details-marker { display: none; }
+    details.sources-details summary:hover { color: var(--foreground); }
+    details.sources-details summary::after {
+      content: '&#9660;';
+      font-size: 0.625rem;
+      color: var(--muted-fg);
+      transition: transform 0.2s ease;
+    }
+    details.sources-details[open] summary::after {
+      transform: rotate(180deg);
+    }
+
+    .sources-list {
+      padding: 0 1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .source-item {
+      padding: 0.75rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+    }
+    .source-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.375rem;
+      flex-wrap: wrap;
+    }
+    .source-employee {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .source-date {
+      font-size: 0.75rem;
+      color: var(--muted-fg);
+      font-family: var(--font-mono);
+    }
+    .source-excerpt {
+      font-size: 0.875rem;
+      color: var(--secondary-fg);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* Responsive */
+    @media (min-width: 640px) {
+      .query-input-row {
+        align-items: flex-start;
+      }
+      .voice-btn {
+        margin-top: 0;
+        height: 56px;
+        width: 3.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <header>
+      <div class="container-md">
+        <div class="page-header">
+          <a href="/" class="logo" aria-label="HER — Volver al inicio">HER</a>
+          <span class="page-title">Consulta — Dirección</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="ceo-main">
+      <div class="ceo-container">
+
+        <!-- Query input -->
+        <section class="query-section" aria-label="Formulario de consulta">
+          <label class="query-label" for="query-input">
+            Pregunta o consulta
+          </label>
+          <div class="query-input-row">
+            <textarea
+              id="query-input"
+              placeholder="Ej: ¿Qué bloqueos reportaron los empleados hoy?"
+              rows="2"
+              maxlength="500"
+              aria-label="Escribe tu pregunta aquí"
+            ></textarea>
+            <button
+              id="btn-voice"
+              class="voice-btn"
+              type="button"
+              title="Grabar pregunta por voz"
+              aria-label="Grabar pregunta por voz"
+            >
+              <span aria-hidden="true">&#127908;</span>
+            </button>
+          </div>
+
+          <div class="query-actions">
+            <button
+              id="btn-query"
+              class="btn-primary"
+              type="button"
+              aria-label="Enviar pregunta al sistema RAG"
+            >
+              Preguntar
+            </button>
+            <button
+              id="btn-summary"
+              class="btn-secondary"
+              type="button"
+              aria-label="Obtener briefing ejecutivo del día"
+            >
+              Briefing del d&iacute;a
+            </button>
+          </div>
+        </section>
+
+        <!-- Status / loading indicator -->
+        <div class="ceo-status" aria-live="polite" aria-atomic="true">
+          <span id="status-label" class="status-label"></span>
+          <span id="loading-spinner" style="display:none;" aria-hidden="true">
+            <span class="spinner"></span>
+          </span>
+        </div>
+
+        <!-- Answer area (query result) -->
+        <section
+          class="answer-section"
+          id="answer-section"
+          aria-live="polite"
+          aria-atomic="false"
+          aria-label="Respuesta del sistema"
+        >
+          <div class="card answer-card glow-sm animate-fade-in-up">
+            <div class="answer-header">
+              <div class="answer-header-left">
+                <span class="answer-label">Respuesta</span>
+                <span id="confidence-badge" class="badge" aria-label="Nivel de confianza"></span>
+              </div>
+            </div>
+            <p class="answer-text" id="answer-text"></p>
+            <div class="answer-footer">
+              <span style="font-size:0.75rem; color: var(--muted-fg);" id="answer-meta"></span>
+              <button id="btn-replay-answer" type="button" aria-label="Escuchar respuesta de nuevo">
+                &#9654; Escuchar de nuevo
+              </button>
+            </div>
+          </div>
+
+          <!-- Sources -->
+          <div class="sources-section" id="sources-section">
+            <details class="sources-details" id="sources-details">
+              <summary id="sources-summary">Fuentes (0)</summary>
+              <div class="sources-list" id="sources-list" aria-label="Lista de fuentes"></div>
+            </details>
+          </div>
+        </section>
+
+        <!-- Summary area (daily briefing) -->
+        <section
+          class="summary-section"
+          id="summary-section"
+          aria-live="polite"
+          aria-label="Briefing del día"
+        >
+          <div class="card animate-fade-in-up">
+            <div class="answer-header">
+              <span class="answer-label">Briefing del d&iacute;a</span>
+            </div>
+            <div class="summary-meta" id="summary-meta"></div>
+            <p class="summary-text" id="summary-text"></p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast for non-blocking errors -->
+  <div
+    id="toast"
+    class="toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  ></div>
+
+  <script src="/js/ceo.js" type="module"></script>
+</body>
+</html>
