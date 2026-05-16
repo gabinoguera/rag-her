@@ -33,6 +33,29 @@ async def test_employee_creation(db_session: AsyncSession) -> None:
     assert isinstance(employee.created_at, datetime)
 
 
+async def test_employee_name_not_null(db_session: AsyncSession) -> None:
+    """Inserting an Employee without a name raises IntegrityError."""
+    from app.models.employee import Employee
+
+    employee = Employee()  # name omitted intentionally
+    db_session.add(employee)
+    with pytest.raises(IntegrityError):
+        await db_session.flush()
+
+
+async def test_employee_table_is_in_her_schema(db_session: AsyncSession) -> None:
+    """The employees table lives in schema 'her', not in 'rag'."""
+    result = await db_session.execute(
+        text(
+            "SELECT table_schema FROM information_schema.tables "
+            "WHERE table_name = 'employees'"
+        )
+    )
+    schemas = [row[0] for row in result.fetchall()]
+    assert "her" in schemas
+    assert "rag" not in schemas
+
+
 # ---------------------------------------------------------------------------
 # CheckIn tests
 # ---------------------------------------------------------------------------
@@ -100,6 +123,42 @@ async def test_checkin_status_values(db_session: AsyncSession) -> None:
         db_session.add(checkin)
 
     await db_session.flush()
+
+
+async def test_checkin_fk_cascade_on_employee_delete(db_session: AsyncSession) -> None:
+    """Deleting an Employee cascades to delete all its CheckIns."""
+    from app.models.checkin import CheckIn
+    from app.models.employee import Employee
+
+    employee = Employee(name="Cascade Test User")
+    db_session.add(employee)
+    await db_session.flush()
+    emp_id = employee.id
+
+    checkin = CheckIn(employee_id=emp_id, session_id="sess-cascade-001")
+    db_session.add(checkin)
+    await db_session.flush()
+    checkin_id = checkin.id
+
+    await db_session.delete(employee)
+    await db_session.flush()
+
+    result = await db_session.execute(
+        select(CheckIn).where(CheckIn.id == checkin_id)
+    )
+    assert result.scalar_one_or_none() is None
+
+
+async def test_checkin_table_is_in_her_schema(db_session: AsyncSession) -> None:
+    """The check_ins table lives in schema 'her', not in 'rag'."""
+    result = await db_session.execute(
+        text(
+            "SELECT table_schema FROM information_schema.tables "
+            "WHERE table_name = 'check_ins'"
+        )
+    )
+    schemas = [row[0] for row in result.fetchall()]
+    assert "her" in schemas
 
 
 # ---------------------------------------------------------------------------
@@ -194,6 +253,18 @@ async def test_checkin_chunk_embedding_stored(db_session: AsyncSession) -> None:
     await db_session.refresh(chunk)
     assert chunk.embedding is not None
     assert len(chunk.embedding) == 768
+
+
+async def test_checkin_chunk_table_is_in_her_schema(db_session: AsyncSession) -> None:
+    """The check_in_chunks table lives in schema 'her', not in 'rag'."""
+    result = await db_session.execute(
+        text(
+            "SELECT table_schema FROM information_schema.tables "
+            "WHERE table_name = 'check_in_chunks'"
+        )
+    )
+    schemas = [row[0] for row in result.fetchall()]
+    assert "her" in schemas
 
 
 # ---------------------------------------------------------------------------

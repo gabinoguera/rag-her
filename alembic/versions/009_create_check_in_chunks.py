@@ -77,13 +77,14 @@ def upgrade() -> None:
 
     # HNSW index for vector similarity search (cosine distance, 768-dim Gemini embeddings)
     op.execute(
-        "CREATE INDEX ON her.check_in_chunks "
+        "CREATE INDEX idx_check_in_chunks_embedding ON her.check_in_chunks "
         "USING hnsw (embedding vector_cosine_ops) "
         "WITH (m=16, ef_construction=200)"
     )
 
 
 def downgrade() -> None:
+    op.execute("DROP INDEX IF EXISTS her.idx_check_in_chunks_embedding")
     op.drop_index(
         "idx_check_in_chunks_checkin_id",
         table_name="check_in_chunks",

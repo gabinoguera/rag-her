@@ -54,6 +54,10 @@ def upgrade() -> None:
             postgresql.TIMESTAMP(timezone=True),
             nullable=True,
         ),
+        sa.CheckConstraint(
+            "status IN ('in_progress','completed','failed')",
+            name="ck_checkins_status",
+        ),
         sa.ForeignKeyConstraint(
             ["employee_id"],
             ["her.employees.id"],
