@@ -72,3 +72,17 @@ def get_checkin_service(
     from app.services.checkin_service import CheckInService
 
     return CheckInService(db=db, embedding_service=embedding_service)
+
+
+def get_ceo_service(
+    db: AsyncSession = Depends(get_db_session),
+    embedding_service: EmbeddingService = Depends(get_embedding_service),
+    generation_service=Depends(get_generation_service),
+) -> "CeoService":  # noqa: F821
+    from app.services.ceo_service import CeoService
+
+    return CeoService(
+        db=db,
+        embedding_service=embedding_service,
+        generation_service=generation_service,
+    )
