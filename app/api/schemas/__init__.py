@@ -1,9 +1,16 @@
-from app.api.schemas.search_request import SearchFilters, SearchRequest
-from app.api.schemas.search_response import SearchResponse, SearchResultItem
+from app.api.schemas.checkin_request import AnswerRequest
+from app.api.schemas.checkin_response import (
+    AnswerCheckInResponse,
+    CheckInStatusResponse,
+    StartCheckInResponse,
+)
+from app.api.schemas.speech import SynthesizeRequest, TranscribeResponse
 
 __all__ = [
-    "SearchFilters",
-    "SearchRequest",
-    "SearchResponse",
-    "SearchResultItem",
+    "AnswerRequest",
+    "StartCheckInResponse",
+    "AnswerCheckInResponse",
+    "CheckInStatusResponse",
+    "TranscribeResponse",
+    "SynthesizeRequest",
 ]

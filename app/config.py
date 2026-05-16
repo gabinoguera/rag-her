@@ -37,6 +37,7 @@ class Settings(BaseSettings):
 
     # Google Cloud (Speech / TTS)
     GOOGLE_CLOUD_PROJECT: str = ""
+    GOOGLE_APPLICATION_CREDENTIALS: str = ""
     STT_LANGUAGE_CODE: str = "es-ES"
     TTS_LANGUAGE_CODE: str = "es-ES"
     TTS_VOICE_NAME: str = "es-ES-Neural2-A"
