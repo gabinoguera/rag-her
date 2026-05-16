@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HER — Check-in Empleado</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* Page-specific layout */
+    .page-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .checkin-main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      padding: 0 1rem 2rem;
+    }
+
+    .checkin-container {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* Progress */
+    .progress-wrap {
+      margin-bottom: 2rem;
+    }
+    .progress-label {
+      font-size: 0.8125rem;
+      color: var(--muted-fg);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    /* Question */
+    .question-card {
+      margin-bottom: 1.5rem;
+    }
+    .question-text {
+      font-size: 1.1875rem;
+      font-weight: 500;
+      color: var(--foreground);
+      line-height: 1.5;
+      min-height: 2.5rem;
+    }
+    .question-text.loading {
+      color: var(--muted-fg);
+    }
+
+    /* Controls */
+    .controls-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .transcript-section {
+      margin-bottom: 1.25rem;
+    }
+    .transcript-label {
+      font-size: 0.8125rem;
+      color: var(--muted-fg);
+      margin-bottom: 0.375rem;
+      font-weight: 500;
+    }
+
+    /* Confirm button */
+    #btn-confirm {
+      width: 100%;
+      padding: 0.75rem;
+    }
+    #btn-confirm.hidden { display: none; }
+
+    /* Fallback text input */
+    .fallback-wrap {
+      display: none;
+    }
+    .fallback-wrap.visible {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+    .fallback-notice {
+      font-size: 0.8125rem;
+      color: var(--warning);
+      padding: 0.5rem 0.75rem;
+      background: hsl(38 92% 50% / 0.1);
+      border-radius: var(--radius);
+      border: 1px solid hsl(38 92% 50% / 0.3);
+    }
+
+    /* Completion screen */
+    #completion-screen {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 0;
+    }
+    #completion-screen.visible {
+      display: block;
+    }
+    .completion-icon {
+      font-size: 3.5rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .completion-name {
+      color: var(--primary);
+      font-size: 1.375rem;
+      font-weight: 600;
+    }
+    #checkin-form { }
+    #checkin-form.hidden { display: none; }
+
+    /* Audio replay */
+    .replay-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: var(--muted-fg);
+      background: none;
+      border: none;
+      padding: 0.25rem 0;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .replay-btn:hover { color: var(--primary); }
+    .replay-btn.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <header>
+      <div class="container">
+        <div class="page-header">
+          <a href="/" class="logo" aria-label="HER — Volver al inicio">HER</a>
+          <span class="page-title">Check-in diario</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="checkin-main">
+      <div class="checkin-container">
+
+        <!-- Progress indicator -->
+        <div class="progress-wrap">
+          <p class="progress-label" id="progress-label" aria-live="polite">Iniciando...</p>
+          <div
+            class="progress-bar"
+            id="progress-bar"
+            role="progressbar"
+            aria-label="Progreso del check-in"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="4"
+          >
+            <span class="step" data-step="1" aria-label="Paso 1">1</span>
+            <span class="step-line" data-line="1"></span>
+            <span class="step" data-step="2" aria-label="Paso 2">2</span>
+            <span class="step-line" data-line="2"></span>
+            <span class="step" data-step="3" aria-label="Paso 3">3</span>
+            <span class="step-line" data-line="3"></span>
+            <span class="step" data-step="4" aria-label="Paso 4">4</span>
+          </div>
+        </div>
+
+        <!-- Check-in form -->
+        <div id="checkin-form">
+          <!-- Question card -->
+          <div class="card question-card animate-fade-in-up">
+            <p
+              class="question-text loading"
+              id="question-text"
+              aria-live="polite"
+              aria-atomic="true"
+            >Cargando...</p>
+            <button
+              class="replay-btn hidden"
+              id="btn-replay"
+              aria-label="Escuchar pregunta de nuevo"
+              type="button"
+            >
+              &#9654; Escuchar de nuevo
+            </button>
+          </div>
+
+          <!-- Status -->
+          <p
+            class="status-label"
+            id="status-label"
+            aria-live="polite"
+            aria-atomic="true"
+          ></p>
+
+          <!-- Controls -->
+          <div class="controls-wrap">
+            <!-- Voice recording -->
+            <button
+              id="btn-record"
+              class="record-btn"
+              type="button"
+              aria-label="Mantén pulsado para hablar o haz clic para iniciar/detener grabación"
+            >
+              <span class="record-icon" aria-hidden="true"></span>
+              <span class="record-label" id="record-label">Hablar</span>
+            </button>
+
+            <!-- Fallback: text input when MediaRecorder not available -->
+            <div class="fallback-wrap" id="fallback-wrap" role="region" aria-label="Entrada de texto alternativa">
+              <p class="fallback-notice" role="alert">
+                Tu navegador no soporta grabación de voz. Escribe tu respuesta:
+              </p>
+              <textarea
+                id="text-fallback"
+                rows="3"
+                placeholder="Escribe tu respuesta aquí..."
+                aria-label="Tu respuesta en texto"
+              ></textarea>
+              <button
+                id="btn-submit-text"
+                class="btn-primary"
+                type="button"
+                aria-label="Enviar respuesta escrita"
+              >Enviar respuesta</button>
+            </div>
+          </div>
+
+          <!-- Transcript display -->
+          <div class="transcript-section">
+            <p class="transcript-label">Lo que hemos escuchado:</p>
+            <div
+              class="transcript-box"
+              id="transcript"
+              aria-live="polite"
+              aria-atomic="true"
+              role="status"
+            ></div>
+          </div>
+
+          <!-- Confirm / re-record -->
+          <button
+            id="btn-confirm"
+            class="btn-primary hidden"
+            type="button"
+            aria-label="Confirmar respuesta y continuar"
+          >
+            Confirmar y continuar &rarr;
+          </button>
+        </div>
+
+        <!-- Completion screen -->
+        <div id="completion-screen" aria-live="polite" class="animate-fade-in-up">
+          <span class="completion-icon" aria-hidden="true">&#10003;</span>
+          <h2>Check-in completado</h2>
+          <p class="completion-name" id="completion-name"></p>
+          <p style="margin-top:0.75rem; color: var(--muted-fg);">
+            Gracias. Tu equipo tiene la información de hoy.
+          </p>
+          <a
+            href="/"
+            class="btn-secondary"
+            style="display:inline-flex; margin-top:1.75rem; padding:0.625rem 1.25rem; border-radius:var(--radius); text-decoration:none;"
+          >Volver al inicio</a>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast for errors -->
+  <div
+    id="toast"
+    class="toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  ></div>
+
+  <script src="/js/employee.js" type="module"></script>
+</body>
+</html>

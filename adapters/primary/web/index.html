@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HER — Inteligencia Conversacional</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* Page-specific styles */
+    .landing-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .landing-hero {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .landing-logo {
+      font-family: var(--font-mono);
+      font-size: clamp(4rem, 12vw, 7rem);
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.15em;
+      line-height: 1;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .landing-tagline {
+      font-size: 1rem;
+      color: var(--muted-fg);
+      font-weight: 400;
+      letter-spacing: 0.01em;
+    }
+
+    .role-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .role-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.625rem;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .role-btn-employee {
+      background: var(--primary);
+      color: var(--primary-fg);
+    }
+    .role-btn-employee:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 24px -4px hsl(46 78% 59% / 0.45);
+      text-decoration: none;
+    }
+
+    .role-btn-ceo {
+      background: var(--secondary);
+      color: var(--secondary-fg);
+      border-color: var(--border);
+    }
+    .role-btn-ceo:hover {
+      background: var(--muted);
+      border-color: var(--primary);
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .role-btn:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    .role-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .landing-footer {
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      color: var(--muted-fg);
+      text-align: center;
+    }
+
+    @media (min-width: 480px) {
+      .role-selector {
+        flex-direction: row;
+        max-width: 480px;
+      }
+      .role-btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="landing-wrap">
+    <div class="landing-hero stagger-children">
+      <span class="landing-logo" aria-label="HER">HER</span>
+      <p class="landing-tagline">Inteligencia operacional conversacional</p>
+    </div>
+
+    <nav class="role-selector stagger-children" aria-label="Selector de rol">
+      <a
+        href="/employee.html"
+        class="role-btn role-btn-employee"
+        aria-label="Entrar como empleado para hacer el check-in"
+      >
+        <span class="role-icon" aria-hidden="true">&#128100;</span>
+        Soy empleado
+      </a>
+      <a
+        href="/ceo.html"
+        class="role-btn role-btn-ceo"
+        aria-label="Entrar como dirección para consultar información"
+      >
+        <span class="role-icon" aria-hidden="true">&#128202;</span>
+        Soy dirección
+      </a>
+    </nav>
+
+    <footer class="landing-footer">
+      <p>AlmaWolf &mdash; HER v0.2</p>
+    </footer>
+  </main>
+</body>
+</html>
