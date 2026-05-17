@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
     # Gemini
     GEMINI_API_KEY: str = ""
-    EMBEDDING_MODEL: str = "text-multilingual-embedding-002"
+    EMBEDDING_MODEL: str = "gemini-embedding-001"
     EMBEDDING_DIMENSIONS: int = 768
     LLM_MODEL: str = "gemini-2.5-flash"
     LLM_MAX_OUTPUT_TOKENS: int = 8192
@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     # Google Cloud (Speech / TTS)
     GOOGLE_CLOUD_PROJECT: str = ""
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
+    STT_MODEL: str = "long"
     STT_LANGUAGE_CODE: str = "es-ES"
     TTS_LANGUAGE_CODE: str = "es-ES"
     TTS_VOICE_NAME: str = "es-ES-Neural2-A"

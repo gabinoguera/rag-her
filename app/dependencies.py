@@ -51,6 +51,7 @@ def get_stt_service(
     return STTService(
         project=settings.GOOGLE_CLOUD_PROJECT,
         language_code=settings.STT_LANGUAGE_CODE,
+        model=settings.STT_MODEL,
     )
 
 

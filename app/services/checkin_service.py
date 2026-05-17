@@ -7,6 +7,7 @@ Responsibilities:
 - Provide session status queries.
 """
 
+import re
 import uuid
 from datetime import UTC, datetime
 
@@ -107,10 +108,10 @@ class CheckInService:
         )
         self._db.add(chunk)
 
-        # First turn: capture the employee's name.
+        # First turn: capture the employee's name (extract from full phrase if needed).
         if current_index == 0:
-            checkin.employee.name = clean_answer
-            logger.info("employee_name_set", name=clean_answer, session_id=session_id)
+            checkin.employee.name = _extract_name(clean_answer)
+            logger.info("employee_name_set", name=checkin.employee.name, session_id=session_id)
 
         await self._db.flush()
 
@@ -207,3 +208,41 @@ class CheckInService:
         # the same session when chunks are added mid-conversation).
         await self._db.refresh(checkin, ["chunks", "employee"])
         return checkin
+
+
+def _extract_name(raw: str) -> str:
+    """Extract just the name from a free-form introduction phrase.
+
+    Handles patterns like:
+      "Hola HER, mi nombre es Gabriel"  -> "Gabriel"
+      "Me llamo Ana García"             -> "Ana García"
+      "Soy Pedro"                       -> "Pedro"
+      "Gabriel"                         -> "Gabriel"
+    Falls back to the last 1-2 capitalised words, or the raw input if nothing matches.
+    """
+    text = raw.strip()
+
+    # Pattern: "mi nombre es X", "me llamo X", "soy X", "soy el/la X"
+    patterns = [
+        r"mi nombre es\s+(.+)",
+        r"me llamo\s+(.+)",
+        r"soy\s+(?:el|la|los|las)?\s*(.+)",
+        r"llámame\s+(.+)",
+        r"puedes llamarme\s+(.+)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip().rstrip(".,;")
+
+    # If no pattern matched and text is short (≤30 chars), assume it's already a name
+    if len(text) <= 30:
+        return text
+
+    # Last resort: grab the last 1-2 capitalised words (likely the actual name)
+    words = text.split()
+    cap_words = [w for w in words if w and w[0].isupper()]
+    if cap_words:
+        return " ".join(cap_words[-2:]) if len(cap_words) >= 2 else cap_words[-1]
+
+    return text

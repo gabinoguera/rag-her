@@ -34,9 +34,10 @@ class STTService:
         language_code: BCP-47 language tag for recognition (default: "es-ES").
     """
 
-    def __init__(self, project: str, language_code: str = "es-ES") -> None:
+    def __init__(self, project: str, language_code: str = "es-ES", model: str = "long") -> None:
         self._project = project
         self._language_code = language_code
+        self._model = model
         # Instantiate once per service instance; the client manages its own
         # connection pool internally.
         self._client = SpeechClient()
@@ -72,7 +73,7 @@ class STTService:
         effective_language = language_code or self._language_code
 
         config = cloud_speech.RecognitionConfig(
-            model="chirp_2",
+            model=self._model,
             language_codes=[effective_language],
             auto_decoding_config=cloud_speech.AutoDetectDecodingConfig(),
         )
