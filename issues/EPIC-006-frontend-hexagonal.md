@@ -1,6 +1,6 @@
 # EPIC-006: Frontend Web (Adaptador Primario Hexagonal)
 
-**Status:** open
+**Status:** ready-to-merge
 **Espera a:** EPIC-003, EPIC-004, EPIC-005
 **Issues hijas:** 006-01, 006-02, 006-03
 
@@ -234,3 +234,96 @@ La condición `os.path.isdir(web_dir)` significa que el mount solo ocurre si el 
 - CEO puede enviar pregunta de texto y ver respuesta + fuentes
 - TTS reproduce audio después de cada respuesta sin bloquear la UI
 - Toast de error aparece y desaparece a los 4s ante fallo de API
+
+## Implementation Review
+
+**Reviewed:** 2026-05-16
+**PR:** #7
+**Reviewer:** Claude Code
+
+### Ficheros entregados
+
+| Fichero | Presente en diff | Lineas |
+|---------|-----------------|--------|
+| `adapters/primary/web/index.html` | ✅ | 145 |
+| `adapters/primary/web/employee.html` | ✅ | 287 |
+| `adapters/primary/web/ceo.html` | ✅ | 411 |
+| `adapters/primary/web/style.css` | ✅ | 459 |
+| `adapters/primary/web/js/employee.js` | ✅ | 403 |
+| `adapters/primary/web/js/ceo.js` | ✅ | 381 |
+
+### MoSCoW Must — verificación
+
+| Requisito | Estado | Evidencia |
+|-----------|--------|-----------|
+| Landing con selector de 2 roles | ✅ | `role-btn-employee` → `/employee.html`, `role-btn-ceo` → `/ceo.html` |
+| Employee: flujo 4 turnos con MediaRecorder | ✅ | `currentTurn` 0→4, `is_complete` manejado, `MediaRecorder` con `audio/webm;codecs=opus` |
+| Employee: fallback a texto si MediaRecorder no disponible | ✅ | `supportsMediaRecorder()` → `#text-fallback` input visible |
+| CEO: `POST /api/v1/ceo/query` | ✅ | Botón "Preguntar", área respuesta + badge confianza coloreado |
+| CEO: `GET /api/v1/ceo/summary` | ✅ | Botón "Briefing del día", sección `#sources-section` colapsable |
+| Error handling: toast no bloqueante 4s | ✅ | `showToast(message, 4000)` en ambos JS, `role="alert" aria-live="assertive"` |
+| TTS automático tras respuesta | ✅ | `POST /api/v1/speech/synthesize` → `new Audio(URL.createObjectURL(blob)).play()` |
+
+### Design System
+
+- 68 usos de `var(--)` en `style.css`
+- Utilidades implementadas: `.glow-sm`, `.glow-md`, `.glass`, `@keyframes fade-in-up`, `.animate-fade-in-up`, `.stagger-children`
+- Todos los tokens extraídos del legacy (`--background`, `--foreground`, `--primary`, `--card`, `--border`, etc.)
+
+### Veredicto
+
+**APROBADO.** La implementación cumple todos los Must del MoSCoW. La estructura hexagonal es correcta (`adapters/primary/web/`). No se detectaron regresiones en la suite backend (213 tests).
+
+## QA Report
+
+**Fecha:** 2026-05-16
+**Entorno:** static file verification (sin servidor activo)
+
+### TC-1: Ficheros existen y tienen contenido
+
+| Fichero | Líneas | Estado |
+|---------|--------|--------|
+| `index.html` | 145 | ✅ |
+| `employee.html` | 287 | ✅ |
+| `ceo.html` | 411 | ✅ |
+| `style.css` | 459 | ✅ |
+| `js/employee.js` | 403 | ✅ |
+| `js/ceo.js` | 381 | ✅ |
+
+### TC-2: style.css — design tokens del legacy
+
+- `var(--)` usados: **68** ✅
+- Utilidades presentes: `.glow-sm`, `.glow-md`, `.glass`, `fade-in-up`, `.stagger-children` ✅
+
+### TC-3: employee.js — APIs correctas
+
+- `POST /api/v1/speech/synthesize` ✅
+- `POST /api/v1/speech/transcribe` ✅ (referenciado en comentario y lógica)
+- `POST /api/v1/checkin/start` ✅
+- `POST /api/v1/checkin/{session_id}/answer` ✅
+- `MediaRecorder` instanciado con `audio/webm;codecs=opus` ✅
+
+### TC-4: ceo.js — APIs correctas
+
+- `POST /api/v1/ceo/query` ✅
+- `GET /api/v1/ceo/summary` ✅
+- `POST /api/v1/speech/synthesize` ✅
+- `MediaRecorder` para grabación opcional ✅
+- `showToast` (fallback/error handling) ✅
+
+### TC-5: Fallback MediaRecorder
+
+- Ocurrencias de `MediaRecorder|fallback|text-fallback|textInput` en `employee.js`: **14** ✅
+- `supportsMediaRecorder()` → muestra `#text-fallback` `<input type="text">` si no disponible ✅
+
+### TC-6: Suite backend sin regresiones
+
+```
+213 passed, 2 warnings in 6.00s
+```
+
+✅ Sin regresiones.
+
+### Resultado global
+
+**✅ QA PASSED — Ready to merge.**
