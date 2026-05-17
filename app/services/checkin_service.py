@@ -114,6 +114,22 @@ class CheckInService:
 
         await self._db.flush()
 
+        # Embed this chunk immediately so it is searchable even if the session
+        # never reaches turn 4 (e.g. employee disconnects mid-flow).
+        try:
+            embeddings = await self._embedding_service.generate_embeddings(
+                [chunk.answer_text], task_type="RETRIEVAL_DOCUMENT"
+            )
+            chunk.embedding = embeddings[0]
+            await self._db.flush()
+        except EmbeddingError:
+            logger.warning(
+                "chunk_embedding_skipped",
+                session_id=session_id,
+                question_index=current_index,
+            )
+            # Non-fatal: chunk is stored without embedding and won't appear in RAG results.
+
         next_index = current_index + 1
 
         if is_complete(next_index):
